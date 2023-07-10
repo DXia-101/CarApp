@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include "common/logininfoinstance.h"
+#include "common/base64.h"
 
 Wares::Wares(QWidget *parent)
     : QWidget{parent}
@@ -511,7 +512,7 @@ void Wares::search()
 
     // 127.0.0.1:80/wares?cmd=search
     // 获取商品信息数目
-    QString url = QString("http://%1:%2/wares?cmd=waressearch=%3").arg(login->getIp()).arg(login->getPort()).arg(Search_LineEdit->text());
+    QString url = QString("http://%1:%2/wares?cmd=waressearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
     cout<<"Search url: "<<url;
