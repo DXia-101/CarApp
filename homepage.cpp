@@ -155,63 +155,6 @@ void HomePage::initServerSQL()
 {
     QNetworkRequest request; //请求对象
 
-    // 获取登陆信息实例
-    LoginInfoInstance *login = LoginInfoInstance::getInstance(); //获取单例
-
-    QString url;
-
-    url = QString("http://%1:%2/showpro?cmd=showpronormal").arg(login->getIp()).arg(login->getPort());
-    request.setUrl(QUrl( url )); //设置url
-    cout << "search url: " << url;
-
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
-
-    QByteArray data = setshowproListJson( login->getUser(), login->getToken(), m_start, m_count);
-
-    //改变文件起点位置
-    m_start += m_count;
-    m_ShowProCount -= m_count;
-
-    //发送post请求
-    QNetworkReply * reply = m_manager->post( request, data );
-    if(reply == NULL)
-    {
-        cout << "reply == NULL";
-        return;
-    }
-
-    //获取请求的数据完成时，就会发送信号SIGNAL(finished())
-    connect(reply, &QNetworkReply::finished, [=]()
-            {
-                if (reply->error() != QNetworkReply::NoError) //有错误
-                {
-                    cout << reply->errorString();
-                    reply->deleteLater(); //释放资源
-                    return;
-                }
-
-                // 服务器返回用户的数据
-                QByteArray array = reply->readAll();
-                //cout<<" showpro search info: "<<array;
-
-                reply->deleteLater();
-
-                //token验证失败
-                if("111" == m_cm.getCode(array)){
-                    QMessageBox::warning(this,"账户异常","请重新登录！");
-
-                    return;
-                }
-
-                // 不是错误码就处理文件列表json信息
-                if("015" != m_cm.getCode(array)){
-                    // 解析商品列表json信息，存放在文件列表中
-                    getshowproJsonInfo(array);
-
-                    //继续获取商品信息列表
-                    getShowProList();
-                }
-            });
 }
 
 //设置json包
