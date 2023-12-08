@@ -16,7 +16,6 @@
 #include <QLabel>
 #include <QGridLayout>
 #include "common/logininfoinstance.h"
-#include "common/base64.h"
 
 
 Product::Product(QWidget *parent)
@@ -78,19 +77,8 @@ void Product::initTableWidget()
     vLayout->addLayout(hLayout);
     vLayout->addWidget(m_tableWidget);
 
-
-
     //显示商品信息
     refreshTable();
-
-#if 0
-    // 获取单例
-    LoginInfoInstance *login = LoginInfoInstance::getInstance();
-
-    QByteArray data = setGetCountJson(login->getUser(),login->getToken());
-
-    qDebug()<<data;
-#endif
 }
 
 void Product::initEditWidget()
@@ -113,7 +101,6 @@ void Product::initEditWidget()
     Edit_Cancel_Btn = new QPushButton(tr("取消"));
     connect(update_Save_Btn, &QPushButton::clicked, this, &Product::update_save_info);
     connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &Product::cancel);
-
 
     QGridLayout *EditLayout = new QGridLayout();
     EditLayout->addWidget(id_Label,0,0);
@@ -303,15 +290,6 @@ void Product::getproductList()
     // 设置请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    /*
-    {
-        "user": "yoyo"
-        "token": "xxxx"
-        "start": 0
-        "count": 10
-    }
-    */
-
     QByteArray data = setproductListJson(login->getUser(),login->getToken(),m_start,m_count);
 
     //改变文件起始点位置
@@ -384,17 +362,8 @@ void Product::getSearchList()
     cout << "search url: " << url;
 
     //qt默认的请求头
-    //request.setRawHeader("Content-Type","text/html");
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    /*
-    {
-        "user": "yoyo"
-        "token": "xxxx"
-        "start": 0
-        "count": 10
-    }
-    */
     QByteArray data = setproductListJson( login->getUser(), login->getToken(), s_start, s_count);
 
     //改变文件起点位置
@@ -469,24 +438,6 @@ void Product::getproductJsonInfo(QByteArray data)
 
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
-                // 商品信息
-                /*struct productInfo{
-                    int product_id;
-                    QString product_name;
-                    QString product_store_unit;
-                    quint16 product_amount;
-                    QString product_sell_unit;
-                    double product_price;
-                };
-                {
-                "product_id":"1",
-                "product_name":"黑色无纺布",
-                "product_store_unit":"米/元",
-                "product_amount":2000,
-                "product_sell_unit":"米/元",
-                "product_price":2000
-                }
-                */
                 productInfo *info = new productInfo;
                 info->product_id = tmp.value("product_id").toInt();
                 info->product_name = tmp.value("product_name").toString();

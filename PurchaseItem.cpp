@@ -24,3 +24,9 @@ void PurchaseItem::on_cancel_btn_clicked()
     this->close();
 }
 
+
+void PurchaseItem::on_Commodity_count_SpBox_valueChanged(int arg1)
+{
+    Purchase::getInstance()->UpdatePurchase(Commodity_name,arg1);
+}
+

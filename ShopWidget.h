@@ -21,6 +21,8 @@ public:
     void refreshPurchaseItems();
 
     void SetUserName(const QString& name);
+protected:
+    QByteArray GetAllPurchaseJson();
 private slots:
     void on_settlementBtn_clicked();
 

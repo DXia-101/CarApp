@@ -111,12 +111,6 @@ Login::Login(QWidget *parent) :
             close();
         }
     });
-        // 切换用户 - 重新登录
-//        connect(m_mainWin, &MainWindow::changeUser, [=]()
-//        {
-//            m_mainWin->hide();
-//            this->show();
-//        });
 }
 
 Login::~Login()
@@ -130,13 +124,6 @@ QByteArray Login::setLoginJson(QString user, QString pwd)
     QMap<QString,QVariant> login;
     login.insert("user",user);
     login.insert("pwd",pwd);
-
-    /*json数据如下
-        {
-            user:xxxx,
-            pwd:xxx
-        }
-    */
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(login);
     if(jsonDocument.isNull()){
@@ -157,23 +144,12 @@ QByteArray Login::setRegisterJson(QString userName, QString nickName, QString fi
     reg.insert("phone", phone);
     reg.insert("email", email);
 
-    /*json数据如下
-        {
-            userName:xxxx,
-            nickName:xxx,
-            firstPwd:xxx,
-            phone:xxx,
-            email:xxx
-        }
-    */
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(reg);
     if ( jsonDocument.isNull() )
     {
         cout << " jsonDocument.isNull() ";
         return "";
     }
-
-    //cout << jsonDocument.toJson().data();
 
     return jsonDocument.toJson();
 }
@@ -237,7 +213,6 @@ void Login::readCfg()
         }
 
     #ifdef _WIN32 //如果是windows平台
-        //fromLocal8Bit(), 本地字符集转换为utf-8
         ui->login_pwd->setText( QString::fromLocal8Bit( (const char *)encPwd, encPwdLen ) );
     #else //其它平台
         ui->login_pwd->setText( (const char *)encPwd );
@@ -477,16 +452,6 @@ void Login::on_register_btn_clicked()
     request.setHeader(QNetworkRequest::ContentLengthHeader, QVariant(array.size()));
     // 发送数据
     QNetworkReply* reply = m_manager->post(request, array);
-#if 0
-    connect(reply, &QNetworkReply::readyRead, [=] {
-        if (reply->error() == QNetworkReply::NoError) {
-            qDebug() << reply->readAll();
-        }else{
-            qDebug()<<reply->errorString();
-        }
-        reply->deleteLater();
-    });
-#endif
     // 判断请求是否被成功处理
     connect(reply, &QNetworkReply::readyRead, [=]()
     {

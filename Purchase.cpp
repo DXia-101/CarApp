@@ -43,6 +43,11 @@ bool Purchase::RemovePurchase(const QString &name)
     }
 }
 
+void Purchase::UpdatePurchase(const QString &name,int value)
+{
+    purchase[name] = value;
+}
+
 int Purchase::GetPurchaseSize()
 {
     return purchaseNames.size();

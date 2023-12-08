@@ -17,6 +17,8 @@ public:
 
     bool RemovePurchase(const QString &name);
 
+    void UpdatePurchase(const QString &name,int value);
+
     int GetPurchaseSize();
     bool purchaseisEmpty();
     QString purchaseAt(int index);
