@@ -19,17 +19,6 @@ UserWindow::UserWindow(QWidget *parent) :
 
 void UserWindow::initWindow()
 {
-//    // 获取主屏幕
-//    QScreen* screen = QGuiApplication::primaryScreen();
-
-//    // 获取屏幕分辨率
-//    QRect screenGeometry = screen->geometry();
-//    int screenWidth = screenGeometry.width();
-//    int screenHeight = screenGeometry.height();
-
-//    // 设置窗口大小
-//    setFixedSize(screenWidth, screenHeight);
-
     m_HomePage = new HomePage();
     shopWidget = new ShopWidget();
     mineWidget = new QWidget();

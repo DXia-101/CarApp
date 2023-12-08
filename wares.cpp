@@ -78,19 +78,8 @@ void Wares::initTableWidget()
     vLayout->addLayout(hLayout);
     vLayout->addWidget(m_tableWidget);
 
-
-
     //显示原料信息
     refreshTable();
-
-#if 0
-    // 获取单例
-    LoginInfoInstance *login = LoginInfoInstance::getInstance();
-
-    QByteArray data = setGetCountJson(login->getUser(),login->getToken());
-
-    qDebug()<<data;
-#endif
 }
 
 void Wares::initEditWidget()
@@ -303,15 +292,6 @@ void Wares::getWaresList()
     // 设置请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    /*
-    {
-        "user": "yoyo"
-        "token": "xxxx"
-        "start": 0
-        "count": 10
-    }
-    */
-
     QByteArray data = setWaresListJson(login->getUser(),login->getToken(),m_start,m_count);
 
     //改变文件起始点位置
@@ -387,14 +367,6 @@ void Wares::getSearchList()
     //request.setRawHeader("Content-Type","text/html");
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    /*
-    {
-        "user": "yoyo"
-        "token": "xxxx"
-        "start": 0
-        "count": 10
-    }
-    */
     QByteArray data = setWaresListJson( login->getUser(), login->getToken(), s_start, s_count);
 
     //改变文件起点位置
@@ -469,24 +441,6 @@ void Wares::getWaresJsonInfo(QByteArray data)
 
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
-                // 原料信息
-                /*struct WaresInfo{
-                    int wares_id;
-                    QString wares_name;
-                    QString wares_store_unit;
-                    quint16 wares_amount;
-                    QString wares_sell_unit;
-                    double wares_price;
-                };
-                {
-                "wares_id":"1",
-                "wares_name":"黑色无纺布",
-                "wares_store_unit":"米/元",
-                "wares_amount":2000,
-                "wares_sell_unit":"米/元",
-                "wares_price":2000
-                }
-                */
                 WaresInfo *info = new WaresInfo;
                 info->wares_id = tmp.value("wares_id").toInt();
                 info->wares_name = tmp.value("wares_name").toString();
@@ -511,21 +465,12 @@ QByteArray Wares::setGetCountJson(QString user, QString token)
     QMap<QString, QVariant> tmp;
     tmp.insert("user", user);
     tmp.insert("token", token);
-
-    /*json数据如下
-    {
-        user:xxxx
-        token: xxxx
-    }
-    */
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if ( jsonDocument.isNull() )
     {
         cout << "setGetCountJson jsonDocument.isNull() ";
         return "";
     }
-
-    //cout << jsonDocument.toJson().data();
     return jsonDocument.toJson();
 }
 
