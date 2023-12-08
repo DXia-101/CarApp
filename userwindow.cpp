@@ -50,6 +50,7 @@ void UserWindow::on_homeBtn_clicked()
 void UserWindow::on_shopBtn_clicked()
 {
     ui->stackedWidget->setCurrentWidget(shopWidget);
+    shopWidget->refreshPurchaseItems();
 }
 
 

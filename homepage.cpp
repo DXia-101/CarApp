@@ -302,5 +302,6 @@ void HomePage::refreshshowproItems()
             totalHeight += proItem->height();
         }
     }
+    layout->addStretch();
     ui->scrollAreaWidgetContents->setGeometry(0,0,400,totalHeight);
 }

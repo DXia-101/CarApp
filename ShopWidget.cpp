@@ -29,6 +29,15 @@ ShopWidget::~ShopWidget()
 
 void ShopWidget::refreshPurchaseItems()
 {
+    QLayoutItem* item;
+    while ((item = layout->takeAt(0)) != nullptr) {
+        QWidget* widget = item->widget();
+        if (widget) {
+            widget->deleteLater();
+        }
+        delete item;
+    }
+    totalHeight = 0;
     if(Purchase::getInstance()->purchaseisEmpty() == false){
         int n = Purchase::getInstance()->GetPurchaseSize();
         for(int i = 0;i < n;++i){
@@ -38,6 +47,7 @@ void ShopWidget::refreshPurchaseItems()
             totalHeight += purItem->height();
         }
     }
+    layout->addStretch();
     ui->scrollAreaWidgetContents->setGeometry(0,0,400,totalHeight);
 }
 
@@ -72,15 +82,8 @@ void ShopWidget::on_settlementBtn_clicked()
         if("033"== m_cm.getCode(jsonData)){
             QMessageBox::information(this,"购买成功","购买成功");
             Purchase::getInstance()->RemoveAllPurchase();
-            QLayoutItem* item;
-            while ((item = layout->takeAt(0)) != nullptr) {
-                QWidget* widget = item->widget();
-                if (widget) {
-                    widget->deleteLater();
-                }
-                delete item;
-            }
-            totalHeight = 0;
+
+
             refreshPurchaseItems();
         }else{
             QMessageBox::warning(this,"购买失败","购买失败");
