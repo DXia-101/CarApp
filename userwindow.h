@@ -8,6 +8,7 @@
 
 #include "homepage.h"
 #include "ShopWidget.h"
+#include "UserInterface.h"
 
 namespace Ui {
 class UserWindow;
@@ -50,7 +51,7 @@ private:
     QStackedWidget *stackedWidget;
 
     ShopWidget *shopWidget;
-    QWidget *mineWidget;
+    UserInterface *mineWidget;
 };
 
 #endif // USERWINDOW_H

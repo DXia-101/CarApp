@@ -37,7 +37,7 @@ private:
     QNetworkAccessManager* m_manager;
 
     QVBoxLayout *layout;
-    int totalHeight;
+    int totalHeight = 0;
 };
 
 #endif // SHOPWIDGET_H

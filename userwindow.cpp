@@ -21,7 +21,7 @@ void UserWindow::initWindow()
 {
     m_HomePage = new HomePage();
     shopWidget = new ShopWidget();
-    mineWidget = new QWidget();
+    mineWidget = new UserInterface(UserName);
 
     shopWidget->SetUserName(UserName);
 

@@ -15,6 +15,7 @@ SOURCES += \
     Purchase.cpp \
     PurchaseItem.cpp \
     ShopWidget.cpp \
+    UserInterface.cpp \
     common/base64.c \
     homepage.cpp \
     main.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     Purchase.h \
     PurchaseItem.h \
     ShopWidget.h \
+    UserInterface.h \
     common/base64.h \
     common/common.h \
     common/des.h \
@@ -52,6 +54,7 @@ HEADERS += \
 FORMS += \
     PurchaseItem.ui \
     ShopWidget.ui \
+    UserInterface.ui \
     homepage.ui \
     login.ui \
     mainwindow.ui \

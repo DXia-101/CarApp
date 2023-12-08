@@ -4,6 +4,7 @@
 #include "PurchaseItem.h"
 
 #include <QJsonDocument>
+#include <QMessageBox>
 #include <QNetworkReply>
 
 #include <common/logininfoinstance.h>
@@ -61,7 +62,30 @@ void ShopWidget::on_settlementBtn_clicked()
     QNetworkReply *reply = m_manager->post(request,array);
 
     connect(reply,&QNetworkReply::readyRead,[=](){
-
+        QByteArray jsonData = reply->readAll();
+        /*
+            注册 - server端返回的json格式数据：
+            成功:{"code":"033"}
+            失败:{"code":"034"}
+        */
+        qDebug()<<QString(jsonData);
+        if("033"== m_cm.getCode(jsonData)){
+            QMessageBox::information(this,"购买成功","购买成功");
+            Purchase::getInstance()->RemoveAllPurchase();
+            QLayoutItem* item;
+            while ((item = layout->takeAt(0)) != nullptr) {
+                QWidget* widget = item->widget();
+                if (widget) {
+                    widget->deleteLater();
+                }
+                delete item;
+            }
+            totalHeight = 0;
+            refreshPurchaseItems();
+        }else{
+            QMessageBox::warning(this,"购买失败","购买失败");
+        }
+        delete reply;
     });
 }
 
@@ -77,6 +101,7 @@ void ShopWidget::on_cancelBtn_clicked()
 QByteArray ShopWidget::GetAllPurchaseJson()
 {
     QMap<QString, QVariant> tmp;
+    tmp.insert(UserName,999);
     int size = Purchase::getInstance()->GetPurchaseSize();
     for(int i = 0;i < size;++i){
         QString name = Purchase::getInstance()->purchaseAt(i);
