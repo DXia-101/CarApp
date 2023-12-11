@@ -117,6 +117,9 @@
                     <bold>true</bold>
                    </font>
                   </property>
+                  <property name="text">
+                   <string>user</string>
+                  </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
@@ -136,6 +139,9 @@
                     <pointsize>12</pointsize>
                     <bold>true</bold>
                    </font>
+                  </property>
+                  <property name="text">
+                   <string>123456</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -736,6 +742,9 @@ color: rgb(255, 255, 255);</string>
                 <family>宋体</family>
                </font>
               </property>
+              <property name="text">
+               <string>80</string>
+              </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -767,6 +776,9 @@ color: rgb(255, 255, 255);</string>
                <font>
                 <family>宋体</family>
                </font>
+              </property>
+              <property name="text">
+               <string>39.108.113.6</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>

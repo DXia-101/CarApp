@@ -8,12 +8,12 @@
 #include <QHBoxLayout>
 #include <QtWidgets>
 
-UserWindow::UserWindow(QWidget *parent) :
+UserWindow::UserWindow(const QString& userName,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::UserWindow)
 {
     ui->setupUi(this);
-
+    this->UserName = userName;
     initWindow();
 }
 
@@ -29,11 +29,6 @@ void UserWindow::initWindow()
     ui->stackedWidget->addWidget(shopWidget);
     ui->stackedWidget->addWidget(mineWidget);
     ui->stackedWidget->setCurrentWidget(m_HomePage);
-}
-
-void UserWindow::InitUserName(const QString &name)
-{
-    UserName = name;
 }
 
 UserWindow::~UserWindow()

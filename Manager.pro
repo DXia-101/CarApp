@@ -12,6 +12,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    CustomerOrders.cpp \
     Purchase.cpp \
     PurchaseItem.cpp \
     ShopWidget.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
 
 
 HEADERS += \
+    CustomerOrders.h \
     Purchase.h \
     PurchaseItem.h \
     ShopWidget.h \
@@ -52,6 +54,7 @@ HEADERS += \
     wares.h
 
 FORMS += \
+    CustomerOrders.ui \
     PurchaseItem.ui \
     ShopWidget.ui \
     UserInterface.ui \

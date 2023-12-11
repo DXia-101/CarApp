@@ -82,8 +82,6 @@ void ShopWidget::on_settlementBtn_clicked()
         if("033"== m_cm.getCode(jsonData)){
             QMessageBox::information(this,"购买成功","购买成功");
             Purchase::getInstance()->RemoveAllPurchase();
-
-
             refreshPurchaseItems();
         }else{
             QMessageBox::warning(this,"购买失败","购买失败");
@@ -104,7 +102,7 @@ void ShopWidget::on_cancelBtn_clicked()
 QByteArray ShopWidget::GetAllPurchaseJson()
 {
     QMap<QString, QVariant> tmp;
-    tmp.insert(UserName,999);
+    tmp.insert(UserName,9999);
     int size = Purchase::getInstance()->GetPurchaseSize();
     for(int i = 0;i < size;++i){
         QString name = Purchase::getInstance()->purchaseAt(i);

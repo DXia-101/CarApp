@@ -21,15 +21,13 @@ class UserWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit UserWindow(QWidget *parent = nullptr);
+    explicit UserWindow(const QString& userName,QWidget *parent = nullptr);
 
     ~UserWindow();
 
     void initWindow();
 
     void refreshHomePage();
-
-    void InitUserName(const QString& name);
 private slots:
     void on_homeBtn_clicked();
 

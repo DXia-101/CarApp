@@ -366,8 +366,7 @@ void Login::on_login_btn_clicked()
             qDebug()<<"user:"<<p->getUser()<<" token:"<<p->getToken();
             // 当前窗口隐藏
             this->hide();
-            m_userWin = new UserWindow();
-            m_userWin->InitUserName(p->getUser());
+            m_userWin = new UserWindow(p->getUser());
             m_userWin->show();
         }
         else if(tmpList.at(0) == "101")

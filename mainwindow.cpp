@@ -37,7 +37,7 @@ void MainWindow::InitTreeWidget()
     infoList<<"采购记录";
     QTreeWidgetItem *twig_4 = new QTreeWidgetItem(treeHead,infoList);
     infoList.clear();
-    infoList<<"销售库存";
+    infoList<<"客户订单";
     QTreeWidgetItem *twig_5 = new QTreeWidgetItem(treeHead,infoList);
     infoList.clear();
     infoList<<"项目报表";
