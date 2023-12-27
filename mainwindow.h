@@ -5,6 +5,7 @@
 #include "qtablewidget.h"
 #include "wares.h"
 #include "product.h"
+#include "UserOrderInterface.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -34,5 +35,6 @@ private:
 
     Wares* wares;
     Product* product;
+    UserOrderInterface* userorder;
 };
 #endif // MAINWINDOW_H

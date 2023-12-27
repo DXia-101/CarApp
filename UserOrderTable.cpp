@@ -1,4 +1,4 @@
-#include "product.h"
+#include "UserOrderTable.h"
 
 #include <QTableWidget>
 #include <QPushButton>
@@ -17,42 +17,33 @@
 #include <QGridLayout>
 #include "common/logininfoinstance.h"
 
-
-Product::Product(QWidget *parent)
-    : QWidget{parent}
+UserOrderTable::UserOrderTable(QString userName,QWidget *parent)
+    : UserName(userName),QWidget{parent}
 {
-    qDebug()<<"进入商品类构造函数";
-    //http管理类对象
     m_manager = Common::getNetManager();
-    //初始化商品信息表页面
     initTableWidget();
 }
 
-Product::~Product()
+UserOrderTable::~UserOrderTable()
 {
     if (m_manager) delete m_manager;
 }
 
-void Product::initTableWidget()
+void UserOrderTable::initTableWidget()
 {
-    qDebug()<<"进入初始化商品信息表页面";
-    // 创建按钮和搜索框
     Search_Btn = new QPushButton(tr("搜索"), this);
     Search_LineEdit = new QLineEdit(this);
-    Add_Btn = new QPushButton(tr("添加"), this);
     Delete_Btn = new QPushButton(tr("删除"), this);
     Update_Btn = new QPushButton(tr("更新"), this);
 
-    // 连接按钮的点击信号到槽函数
-    connect(Search_Btn, &QPushButton::clicked, this, &Product::search);
-    connect(Add_Btn, &QPushButton::clicked, this, &Product::add);
-    connect(Delete_Btn, &QPushButton::clicked, this, &Product::remove);
-    connect(Update_Btn, &QPushButton::clicked, this, &Product::update);
+    connect(Search_Btn, &QPushButton::clicked, this, &UserOrderTable::search);
+    connect(Delete_Btn, &QPushButton::clicked, this, &UserOrderTable::remove);
+    connect(Update_Btn, &QPushButton::clicked, this, &UserOrderTable::update);
 
     m_tableWidget = new QTableWidget(this);
     // 创建商品表格
-    m_tableWidget->setColumnCount(6);
-    m_tableWidget->setHorizontalHeaderLabels({"商品编号","商品名称","计量单位","商品库存","计价单位","单价"});
+    m_tableWidget->setColumnCount(2);
+    m_tableWidget->setHorizontalHeaderLabels({"商品名称","订购数量"});
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //设置表格选择整行
@@ -69,7 +60,6 @@ void Product::initTableWidget()
     hLayout->addWidget(Search_Btn);
     hLayout->addWidget(Search_LineEdit);
     hLayout->addStretch();
-    hLayout->addWidget(Add_Btn);
     hLayout->addWidget(Delete_Btn);
     hLayout->addWidget(Update_Btn);
 
@@ -81,47 +71,32 @@ void Product::initTableWidget()
     refreshTable();
 }
 
-void Product::initEditWidget()
+void UserOrderTable::initEditWidget()
 {
-    product_Edit = new QWidget();
+    UserOrder_Edit = new QWidget();
 
-    QLabel *id_Label = new QLabel(tr("商品ID"));
-    QLabel *name_Label = new QLabel(tr("商品名称"));
-    QLabel *store_Label = new QLabel(tr("计量单位"));
-    QLabel *amount_Label = new QLabel(tr("商品库存"));
-    QLabel *sell_Label = new QLabel(tr("计价单位"));
-    QLabel *price_Label = new QLabel(tr("商品价格"));
-    id_Edit  = new QLineEdit();
-    name_Edit = new QLineEdit();
-    store_Edit = new QLineEdit();
-    amount_Edit = new QLineEdit();
-    sell_Edit = new QLineEdit();
-    price_Edit = new QLineEdit();
+    QLabel *UserOrder_ProductName_Label = new QLabel(tr("商品名称"));
+    QLabel *UserOrder_Count_Label = new QLabel(tr("订购数量"));
+
+    UserOrder_ProductName_Edit  = new QLineEdit();
+    UserOrder_Count_Edit = new QLineEdit();
     update_Save_Btn = new QPushButton(tr("保存"));
     Edit_Cancel_Btn = new QPushButton(tr("取消"));
-    connect(update_Save_Btn, &QPushButton::clicked, this, &Product::update_save_info);
-    connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &Product::cancel);
+    connect(update_Save_Btn, &QPushButton::clicked, this, &UserOrderTable::update_save_info);
+    connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &UserOrderTable::cancel);
 
     QGridLayout *EditLayout = new QGridLayout();
-    EditLayout->addWidget(id_Label,0,0);
-    EditLayout->addWidget(name_Label,1,0);
-    EditLayout->addWidget(store_Label,2,0);
-    EditLayout->addWidget(amount_Label,3,0);
-    EditLayout->addWidget(sell_Label,4,0);
-    EditLayout->addWidget(price_Label,5,0);
-    EditLayout->addWidget(id_Edit,0,1);
-    EditLayout->addWidget(name_Edit,1,1);
-    EditLayout->addWidget(store_Edit,2,1);
-    EditLayout->addWidget(amount_Edit,3,1);
-    EditLayout->addWidget(sell_Edit,4,1);
-    EditLayout->addWidget(price_Edit,5,1);
+    EditLayout->addWidget(UserOrder_ProductName_Label,0,0);
+    EditLayout->addWidget(UserOrder_Count_Label,1,0);
+    EditLayout->addWidget(UserOrder_ProductName_Edit,0,1);
+    EditLayout->addWidget(UserOrder_Count_Edit,1,1);
+
     EditLayout->addWidget(update_Save_Btn,6,0);
     EditLayout->addWidget(Edit_Cancel_Btn,6,1);
-    product_Edit->setLayout(EditLayout);
+    UserOrder_Edit->setLayout(EditLayout);
 }
 
-// 得到服务器json文件
-QStringList Product::getCountStatus(QByteArray json)
+QStringList UserOrderTable::getCountStatus(QByteArray json)
 {
     QJsonParseError error;
     QStringList list;
@@ -146,20 +121,19 @@ QStringList Product::getCountStatus(QByteArray json)
     return list;
 }
 
-// 显示用户的文件列表
-void Product::refreshTable()
+void UserOrderTable::refreshTable()
 {
     // 清空文件列表信息
-    clearproductList();
+    clearUserOrderList();
 
-    //将之前的productlist清空
-    clearproductItems();
+    //将之前的UserOrderlist清空
+    clearUserOrderItems();
 
     //将表格行数清零
     m_tableWidget->setRowCount(0);
 
     //获取商品信息数目
-    m_productCount = 0;
+    m_UserOrderCount = 0;
 
     QNetworkRequest request;
 
@@ -167,15 +141,14 @@ void Product::refreshTable()
     // 获取单例
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    // 127.0.0.1:80/product?cmd=productcount
+    // 127.0.0.1:80/UserOrder?cmd=UserOrdercount
     // 获取商品信息数目
-    QString url = QString("http://%1:%2/product?cmd=productcount").arg(login->getIp()).arg(login->getPort());
+    QString url = QString("http://%1:%2/showpro?cmd=UserOrdercount=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
     // qt默认的请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());
-    qDebug()<<data;
 
     //发送post请求
     QNetworkReply* reply = m_manager->post(request,data);
@@ -186,15 +159,14 @@ void Product::refreshTable()
     connect(reply,&QNetworkReply::finished,[=](){
         if(reply->error() != QNetworkReply::NoError)//出错
         {
-            cout<<reply->errorString();
+            qDebug()<<reply->errorString();
             reply->deleteLater();//释放资源
             return;
         }
         //服务器返回数据
         QByteArray array = reply->readAll();
-        cout<<" server return file: "<<array;
 
-        reply->deleteLater();//释放
+        reply->deleteLater();
 
         // 得到服务器json文件
         QStringList list = getCountStatus(array);
@@ -202,72 +174,63 @@ void Product::refreshTable()
         // token验证失败
         if(list.at(0) == "111"){
             QMessageBox::warning(this,"账户异常","请重新登录!");
-            //emit
             return;
         }
 
         //转换为long
-        m_productCount = list.at(1).toLong();
-        cout<<"userproductCount = " << m_productCount;
+        m_UserOrderCount = list.at(1).toLong();
 
         // 清空文件列表信息
-        clearproductList();
+        clearUserOrderList();
 
-        if(m_productCount > 0){
+        if(m_UserOrderCount > 0){
             // 说明任然有商品
             m_start = 0;    //从0开始
             m_count = 10;   //每次请求10个
 
             // 获取新的商品列表信息
-            getproductList();
+            getUserOrderList();
         }else{//没有商品
-            refreshproductItems(); //更新Items
+            refreshUserOrderItems(); //更新Items
         }
     });
 }
 
-// 清空商品列表
-void Product::clearproductList()
+void UserOrderTable::clearUserOrderList()
 {
     m_tableWidget->clear();
 }
 
-// 清空所有商品Item
-void Product::clearproductItems()
+void UserOrderTable::clearUserOrderItems()
 {
-    m_productList.clear();
+    m_UserOrderList.clear();
 }
 
-// 商品Item展示
-void Product::refreshproductItems()
+void UserOrderTable::refreshUserOrderItems()
 {
     //如果文件列表不为空，显示商品列表
-    if(m_productList.isEmpty() == false){
-        int n = m_productList.size();
+    if(m_UserOrderList.isEmpty() == false){
+        int n = m_UserOrderList.size();
         for(int i = 0;i < n;++i){
-            productInfo *tmp = m_productList.at(i);
+            UserOrderTableInfo *tmp = m_UserOrderList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
-            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->product_id)));
-            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->product_name));
-            m_tableWidget->setItem(row,2,new QTableWidgetItem(tmp->product_store_unit));
-            m_tableWidget->setItem(row,3,new QTableWidgetItem(QString::number(tmp->product_amount)));
-            m_tableWidget->setItem(row,4,new QTableWidgetItem(tmp->product_sell_unit));
-            m_tableWidget->setItem(row,5,new QTableWidgetItem(QString::number(tmp->product_price)));
+            m_tableWidget->setItem(row,0,new QTableWidgetItem(tmp->UserOrderTable_Productname));
+            m_tableWidget->setItem(row,1,new QTableWidgetItem(QString::number(tmp->UserOrderTable_count)));
         }
     }
 }
 
-void Product::getproductList()
+void UserOrderTable::getUserOrderList()
 {
     // 遍历数目，结束条件处理
-    if(m_productCount <= 0){ // 函数递归的结束条件
-        cout<< "获取用户文件列表的条件结束";
-        refreshproductItems();// 更新表单
+    if(m_UserOrderCount <= 0){ // 函数递归的结束条件
+        cout<< "获取用户订单结束";
+        refreshUserOrderItems();// 更新表单
         return;
-    }else if(m_count > m_productCount) // 如果请求文件数量大于商品数目
+    }else if(m_count > m_UserOrderCount) // 如果请求文件数量大于商品数目
     {
-        m_count = m_productCount;
+        m_count = m_UserOrderCount;
     }
 
     QNetworkRequest request; // 请求对象
@@ -275,41 +238,38 @@ void Product::getproductList()
     //获取登录信息实例
     LoginInfoInstance *login = LoginInfoInstance::getInstance();    // 获取单例
 
-    QString tmp = QString("productnormal");
-
-    QString url = QString("http://%1:%2/product?cmd=%3").arg(login->getIp()).arg(login->getPort()).arg(tmp);
+    QString url = QString("http://%1:%2/showpro?cmd=UserOrdernormal=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
 
     request.setUrl(QUrl(url));
 
-    cout<<"product url: "<<url;
+    cout<<"UserOrder url: "<<url;
 
     // 设置请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setproductListJson(login->getUser(),login->getToken(),m_start,m_count);
+    QByteArray data = setUserOrderListJson(login->getUser(),login->getToken(),m_start,m_count);
 
     //改变文件起始点位置
     m_start += m_count;
-    m_productCount -= m_count;
+    m_UserOrderCount -= m_count;
 
     //发送post请求
     QNetworkReply * reply = m_manager->post(request,data);
     if(reply == NULL){
-        cout<<"getproductList reply == NULL";
+        cout<<"getUserOrderList reply == NULL";
         return;
     }
 
     //获取请求的数据完成时，就会发送信号SIGNAL(finished())
     connect(reply,&QNetworkReply::finished,[=](){
        if(reply->error() != QNetworkReply::NoError){
-           cout<<"getproductList error: "<<reply->errorString();
+           cout<<"getUserOrderList error: "<<reply->errorString();
            reply->deleteLater(); // 释放资源
            return;
        }
 
        // 服务器返回用户的数据
        QByteArray array = reply->readAll();
-       //cout<<" product info: "<<array;
 
        reply->deleteLater();
 
@@ -322,45 +282,40 @@ void Product::getproductList()
 
        // 不是错误码就处理文件列表json信息
        if("015" != m_cm.getCode(array)){
-           // 解析商品列表json信息，存放在文件列表中
-           getproductJsonInfo(array);
+           getUserOrderJsonInfo(array);
 
            //继续获取商品信息列表
-           getproductList();
+           getUserOrderList();
        }
     });
 }
 
-void Product::getSearchList()
+void UserOrderTable::getSearchList()
 {
     //遍历数目，结束条件处理
     if(m_SearchCount <= 0) //结束条件，这个条件很重要，函数递归的结束条件
     {
         cout << "获取用户文件列表条件结束";
-        refreshproductItems(); //更新item
+        refreshUserOrderItems(); //更新item
         return; //中断函数
     }
     else if(s_count > m_SearchCount) //如果请求文件数量大于用户的文件数目
     {
         s_count = m_SearchCount;
     }
-
-
     QNetworkRequest request; //请求对象
-
     // 获取登陆信息实例
     LoginInfoInstance *login = LoginInfoInstance::getInstance(); //获取单例
 
     QString url;
 
-    url = QString("http://%1:%2/product?cmd=productresult").arg(login->getIp()).arg(login->getPort());
-    request.setUrl(QUrl( url )); //设置url
-    cout << "search url: " << url;
+    url = QString("http://%1:%2/showpro?cmd=UserOrderresult=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
+    request.setUrl(QUrl( url ));
 
     //qt默认的请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setproductListJson( login->getUser(), login->getToken(), s_start, s_count);
+    QByteArray data = setUserOrderListJson( login->getUser(), login->getToken(), s_start, s_count);
 
     //改变文件起点位置
     s_start += s_count;
@@ -386,21 +341,20 @@ void Product::getSearchList()
 
         // 服务器返回用户的数据
         QByteArray array = reply->readAll();
-        cout<<" product search info: "<<array;
+        cout<<" UserOrder search info: "<<array;
 
         reply->deleteLater();
 
         //token验证失败
         if("111" == m_cm.getCode(array)){
             QMessageBox::warning(this,"账户异常","请重新登录！");
-
             return;
         }
 
         // 不是错误码就处理文件列表json信息
         if("015" != m_cm.getCode(array)){
             // 解析商品列表json信息，存放在文件列表中
-            getproductJsonInfo(array);
+            getUserOrderJsonInfo(array);
 
             //继续获取商品信息列表
             getSearchList();
@@ -408,8 +362,7 @@ void Product::getSearchList()
     });
 }
 
-// 解析商品列表json信息，存放在文件列表中
-void Product::getproductJsonInfo(QByteArray data)
+void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
 {
     QJsonParseError error;
 
@@ -418,42 +371,37 @@ void Product::getproductJsonInfo(QByteArray data)
     QJsonDocument doc = QJsonDocument::fromJson(data,&error);
     if(error.error == QJsonParseError::NoError){
         if(doc.isNull() || doc.isEmpty()){
-            cout<<" m_productList doc.isNUll() || doc.isEmpty() ";
+            cout<<" m_UserOrderList doc.isNUll() || doc.isEmpty() ";
             return;
         }
         if(doc.isObject()){
             //QJsonObject json对象，描述json数据中{}括起来部分
             QJsonObject obj = doc.object();//取得最外层这个大对象
 
-            //获取product对应的数组
+            //获取UserOrder对应的数组
             //QJsonArray json数组,描述json数据中[]括起来的部分
-            QJsonArray array = obj.value("product").toArray();
+            QJsonArray array = obj.value("UserOrder").toArray();
 
             int size = array.size(); // 数组个数
             cout<<"size = "<<size;
 
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
-                productInfo *info = new productInfo;
-                info->product_id = tmp.value("product_id").toInt();
-                info->product_name = tmp.value("product_name").toString();
-                info->product_store_unit = tmp.value("product_store_unit").toString();
-                info->product_amount = tmp.value("product_amount").toInt();
-                info->product_sell_unit = tmp.value("product_sell_unit").toString();
-                info->product_price = tmp.value("product_price").toDouble();
+                UserOrderTableInfo *info = new UserOrderTableInfo;
+                info->UserOrderTable_Productname = tmp.value("UserOrderTable_Productname").toString();
+                info->UserOrderTable_count = tmp.value("UserOrderTable_count").toInt();
 
                 //List添加节点
-                m_productList.append(info);
+                m_UserOrderList.append(info);
 
             }
         }
     }else{
-        cout<<"getproductJsonInfo error = "<<error.errorString();
+        cout<<"getUserOrderJsonInfo error = "<<error.errorString();
     }
 }
 
-// 设置json包
-QByteArray Product::setGetCountJson(QString user, QString token)
+QByteArray UserOrderTable::setGetCountJson(QString user, QString token)
 {
     QMap<QString, QVariant> tmp;
     tmp.insert("user", user);
@@ -476,8 +424,7 @@ QByteArray Product::setGetCountJson(QString user, QString token)
     return jsonDocument.toJson();
 }
 
-//设置json包
-QByteArray Product::setproductListJson(QString user, QString token, int start, int count)
+QByteArray UserOrderTable::setUserOrderListJson(QString user, QString token, int start, int count)
 {
     QMap<QString,QVariant> tmp;
     tmp.insert("user",user);
@@ -487,23 +434,19 @@ QByteArray Product::setproductListJson(QString user, QString token, int start, i
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if( jsonDocument.isNull()){
-        cout<<"setproductListJson jsonDocument.isNull()";
+        cout<<"setUserOrderListJson jsonDocument.isNull()";
         return "";
     }
 
     return jsonDocument.toJson();
 }
 
-//设置上传json包
-QByteArray Product::setUploadJson()
+QByteArray UserOrderTable::setUploadJson()
 {
     QMap<QString,QVariant> tmp;
-    tmp.insert("product_id",id_Edit->text().toInt());
-    tmp.insert("product_name",name_Edit->text());
-    tmp.insert("product_store_unit",store_Edit->text());
-    tmp.insert("product_amount",amount_Edit->text().toInt());
-    tmp.insert("product_sell_unit",sell_Edit->text());
-    tmp.insert("product_price",price_Edit->text().toInt());
+    tmp.insert("UserOrderTable_Productname",UserOrder_ProductName_Edit->text());
+    tmp.insert("UserOrderTable_count",UserOrder_Count_Edit->text().toInt());
+
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
@@ -513,30 +456,44 @@ QByteArray Product::setUploadJson()
     return jsonDocument.toJson();
 }
 
-//搜索商品信息
-void Product::search()
+QByteArray UserOrderTable::setSelectJson()
+{
+    QMap<QString,QVariant> tmp;
+    QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
+    foreach (QModelIndex index, selectedRows) {
+        int row = index.row();
+        tmp.insert("UserOrderTable_Productname",m_tableWidget->item(row, 0)->text());
+        tmp.insert("UserOrderTable_count",m_tableWidget->item(row, 1)->text().toInt());
+    }
+    QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
+    if(jsonDocument.isNull()){
+        cout<<"setSelectJson jsonDocument.isNull()";
+        return "";
+    }
+    return jsonDocument.toJson();
+}
+
+void UserOrderTable::search()
 {
     // 清空文件列表信息
-    clearproductList();
+    clearUserOrderList();
 
-    //将之前的productlist清空
-    clearproductItems();
+    //将之前的UserOrderlist清空
+    clearUserOrderItems();
 
     //将表格行数清零
     m_tableWidget->setRowCount(0);
 
     //获取商品信息数目
     m_SearchCount = 0;
-
     QNetworkRequest request;
-
     // 获取登陆信息实例
     // 获取单例
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    // 127.0.0.1:80/product?cmd=search
+    // 127.0.0.1:80/UserOrder?cmd=search
     // 获取商品信息数目
-    QString url = QString("http://%1:%2/product?cmd=productsearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/showpro?cmd=UserOrdersearch=%3&%4").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64())),arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
     cout<<"Search url: "<<url;
@@ -590,42 +547,12 @@ void Product::search()
             // 获取新的商品列表信息
             getSearchList();
         }else{//没有文件
-            refreshproductItems(); //更新表
+            refreshUserOrderItems(); //更新表
         }
     });
 }
 
-//添加商品信息
-void Product::add()
-{
-    cur_status = add_status;
-    initEditWidget();
-    product_Edit->show();
-}
-
-//将选中的表数据的行只作为json包
-QByteArray Product::setSelectJson(){
-    QMap<QString,QVariant> tmp;
-    QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
-    foreach (QModelIndex index, selectedRows) {
-        int row = index.row();
-        tmp.insert("product_id",m_tableWidget->item(row, 0)->text().toInt());
-        tmp.insert("product_name",m_tableWidget->item(row, 1)->text());
-        tmp.insert("product_store_unit",m_tableWidget->item(row, 2)->text());
-        tmp.insert("product_amount",m_tableWidget->item(row, 3)->text());
-        tmp.insert("product_sell_unit",m_tableWidget->item(row, 4)->text());
-        tmp.insert("product_price",m_tableWidget->item(row, 5)->text());
-    }
-    QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
-    if(jsonDocument.isNull()){
-        cout<<"setSelectJson jsonDocument.isNull()";
-        return "";
-    }
-    return jsonDocument.toJson();
-}
-
-//删除商品信息
-void Product::remove()
+void UserOrderTable::remove()
 {
     //将要上传的信息打包为json格式.
     QByteArray array = setSelectJson();
@@ -633,7 +560,7 @@ void Product::remove()
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url= QString("http://%1:%2/product?cmd=productdelete").arg(login->getIp()).arg(login->getPort());
+    QString url= QString("http://%1:%2/showpro?cmd=UserOrderdelete=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
 
     request.setUrl(QUrl(url));
     //设置请求头
@@ -666,25 +593,20 @@ void Product::remove()
     });
 }
 
-//更新商品信息
-void Product::update()
+void UserOrderTable::update()
 {
     cur_status = update_status;
     initEditWidget();
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        id_Edit->setText(m_tableWidget->item(row, 0)->text());
-        name_Edit->setText(m_tableWidget->item(row, 1)->text());
-        store_Edit->setText(m_tableWidget->item(row, 2)->text());
-        amount_Edit->setText(m_tableWidget->item(row, 3)->text());
-        sell_Edit->setText(m_tableWidget->item(row, 4)->text());
-        price_Edit->setText(m_tableWidget->item(row, 5)->text());
+        UserOrder_ProductName_Edit->setText(m_tableWidget->item(row, 0)->text());
+        UserOrder_Count_Edit->setText(m_tableWidget->item(row, 1)->text());
     }
-    product_Edit->show();
+    UserOrder_Edit->show();
 }
 
-void Product::update_save_info()
+void UserOrderTable::update_save_info()
 {
     //将要上传的信息打包为json格式.
     QByteArray array = setUploadJson();
@@ -694,9 +616,7 @@ void Product::update_save_info()
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
     QString url;
     if(update_status == cur_status){
-        url = QString("http://%1:%2/product?cmd=productupdate").arg(login->getIp()).arg(login->getPort());
-    }else if(add_status == cur_status){
-        url = QString("http://%1:%2/product?cmd=productadd").arg(login->getIp()).arg(login->getPort());
+        url = QString("http://%1:%2/showpro?cmd=UserOrderupdate=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
     }
 
     request.setUrl(QUrl(url));
@@ -722,29 +642,22 @@ void Product::update_save_info()
         {
             //上传成功
             QMessageBox::information(this,"上传成功","上传成功");
-            id_Edit->clear();
-            name_Edit->clear();
-            store_Edit->clear();
-            amount_Edit->clear();
-            sell_Edit->clear();
-            price_Edit->clear();
-            product_Edit->hide();
+            UserOrder_ProductName_Edit->clear();
+            UserOrder_Count_Edit->clear();
+            UserOrder_Edit->hide();
             refreshTable();
         }else{
             QMessageBox::warning(this,"上传失败","上传失败");
-            product_Edit->hide();
+            UserOrder_Edit->hide();
         }
         delete reply;
     });
 }
 
-void Product::cancel()
+void UserOrderTable::cancel()
 {
-    id_Edit->clear();
-    name_Edit->clear();
-    store_Edit->clear();
-    amount_Edit->clear();
-    sell_Edit->clear();
-    price_Edit->clear();
-    product_Edit->hide();
+    UserOrder_ProductName_Edit->clear();
+    UserOrder_Count_Edit->clear();
+
+    UserOrder_Edit->hide();
 }

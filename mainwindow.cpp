@@ -56,6 +56,8 @@ void MainWindow::InitTreeWidget()
     ui->StackWidget->setCurrentWidget(wares);
     product = new Product();
     ui->StackWidget->addWidget(product);
+    userorder = new UserOrderInterface();
+    ui->StackWidget->addWidget(userorder);
 
 }
 
@@ -71,6 +73,9 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     }
     if(item->text(column)=="产品库存"){
         ui->StackWidget->setCurrentWidget(product);
+    }
+    if(item->text(column)=="客户订单"){
+        ui->StackWidget->setCurrentWidget(userorder);
     }
 }
 

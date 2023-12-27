@@ -17,6 +17,8 @@ SOURCES += \
     PurchaseItem.cpp \
     ShopWidget.cpp \
     UserInterface.cpp \
+    UserOrderInterface.cpp \
+    UserOrderTable.cpp \
     common/base64.c \
     homepage.cpp \
     main.cpp \
@@ -39,6 +41,8 @@ HEADERS += \
     PurchaseItem.h \
     ShopWidget.h \
     UserInterface.h \
+    UserOrderInterface.h \
+    UserOrderTable.h \
     common/base64.h \
     common/common.h \
     common/des.h \
@@ -58,6 +62,7 @@ FORMS += \
     PurchaseItem.ui \
     ShopWidget.ui \
     UserInterface.ui \
+    UserOrderInterface.ui \
     homepage.ui \
     login.ui \
     mainwindow.ui \
