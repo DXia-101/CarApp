@@ -4,6 +4,8 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 #include "common/common.h"
+#include <QVector>
+#include "UserOrderTable.h"
 
 namespace Ui {
 class UserOrderInterface;
@@ -21,6 +23,7 @@ protected:
     void InitUserTree();
     void GetUserNames();
     void AddNameToTree(const QVector<QString>& namesList);
+    void CreateUserOrderTable(const QVector<QString>& namesList);
 private slots:
     void on_UserTree_itemClicked(QTreeWidgetItem *item, int column);
 
@@ -30,6 +33,7 @@ private:
     QNetworkAccessManager* m_manager;
 
     QVector<QString> userNamesList;
+    QVector<UserOrderTable*> userOrderTableList;
 };
 
 #endif // USERORDERINTERFACE_H

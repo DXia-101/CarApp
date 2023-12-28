@@ -143,7 +143,7 @@ void UserOrderTable::refreshTable()
 
     // 127.0.0.1:80/UserOrder?cmd=UserOrdercount
     // 获取商品信息数目
-    QString url = QString("http://%1:%2/showpro?cmd=UserOrdercount=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/UserOrder?cmd=userOrdercount=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
     // qt默认的请求头
@@ -238,7 +238,7 @@ void UserOrderTable::getUserOrderList()
     //获取登录信息实例
     LoginInfoInstance *login = LoginInfoInstance::getInstance();    // 获取单例
 
-    QString url = QString("http://%1:%2/showpro?cmd=UserOrdernormal=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/UserOrder?cmd=userOrdernormal=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
 
     request.setUrl(QUrl(url));
 
@@ -309,7 +309,7 @@ void UserOrderTable::getSearchList()
 
     QString url;
 
-    url = QString("http://%1:%2/showpro?cmd=UserOrderresult=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
+    url = QString("http://%1:%2/UserOrder?cmd=userOrderresult=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
     request.setUrl(QUrl( url ));
 
     //qt默认的请求头
@@ -493,7 +493,7 @@ void UserOrderTable::search()
 
     // 127.0.0.1:80/UserOrder?cmd=search
     // 获取商品信息数目
-    QString url = QString("http://%1:%2/showpro?cmd=UserOrdersearch=%3&%4").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64())),arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/UserOrder?cmd=userOrdersearch=%3&%4").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64())),arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
     cout<<"Search url: "<<url;
@@ -560,7 +560,7 @@ void UserOrderTable::remove()
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url= QString("http://%1:%2/showpro?cmd=UserOrderdelete=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
+    QString url= QString("http://%1:%2/UserOrder?cmd=userOrderdelete=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
 
     request.setUrl(QUrl(url));
     //设置请求头
@@ -616,7 +616,7 @@ void UserOrderTable::update_save_info()
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
     QString url;
     if(update_status == cur_status){
-        url = QString("http://%1:%2/showpro?cmd=UserOrderupdate=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
+        url = QString("http://%1:%2/UserOrder?cmd=userOrderupdate=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8().toBase64()));
     }
 
     request.setUrl(QUrl(url));

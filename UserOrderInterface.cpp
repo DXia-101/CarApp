@@ -56,6 +56,7 @@ void UserOrderInterface::GetUserNames()
             }
         }
         AddNameToTree(userNamesList);
+        CreateUserOrderTable(userNamesList);
     });
 }
 
@@ -75,8 +76,21 @@ void UserOrderInterface::AddNameToTree(const QVector<QString>& namesList)
     ui->UserTree->expandAll();
 }
 
+void UserOrderInterface::CreateUserOrderTable(const QVector<QString> &namesList)
+{
+    for(int i = 0;i < namesList.size();++i){
+        UserOrderTable* tempTable = new UserOrderTable(namesList[i]);
+        ui->stackedWidget->addWidget(tempTable);
+        userOrderTableList.emplace_back(tempTable);
+    }
+}
+
 void UserOrderInterface::on_UserTree_itemClicked(QTreeWidgetItem *item, int column)
 {
-
+    for(int i = 0;i < userNamesList.size();++i){
+        if(item->text(column) == userNamesList[i]){
+            ui->stackedWidget->setCurrentWidget(userOrderTableList[i]);
+        }
+    }
 }
 
