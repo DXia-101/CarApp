@@ -42,8 +42,8 @@ void UserOrderTable::initTableWidget()
 
     m_tableWidget = new QTableWidget(this);
     // 创建商品表格
-    m_tableWidget->setColumnCount(3);
-    m_tableWidget->setHorizontalHeaderLabels({"商品名称","订购数量","订购时间"});
+    m_tableWidget->setColumnCount(4);
+    m_tableWidget->setHorizontalHeaderLabels({"订单ID","商品名称","订购数量","订购时间"});
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //设置表格选择整行
@@ -217,9 +217,10 @@ void UserOrderTable::refreshUserOrderItems()
             UserOrderTableInfo *tmp = m_UserOrderList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
-            m_tableWidget->setItem(row,0,new QTableWidgetItem(tmp->UserOrderTable_Productname));
-            m_tableWidget->setItem(row,1,new QTableWidgetItem(QString::number(tmp->UserOrderTable_count)));
-            m_tableWidget->setItem(row,2,new QTableWidgetItem(tmp->UserOrderTable_time));
+            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->UserOrderTable_OrderID)))
+            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->UserOrderTable_Productname));
+            m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->UserOrderTable_count)));
+            m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->UserOrderTable_time));
         }
     }
 }
@@ -391,6 +392,7 @@ void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
                 UserOrderTableInfo *info = new UserOrderTableInfo;
+                info->UserOrderTable_OrderID = tmp.value("UserOrderTable_OrderID").toInt();
                 info->UserOrderTable_Productname = tmp.value("UserOrderTable_Productname").toString();
                 info->UserOrderTable_count = tmp.value("UserOrderTable_count").toInt();
                 info->UserOrderTable_time = tmp.value("UserOrderTable_time").toString();

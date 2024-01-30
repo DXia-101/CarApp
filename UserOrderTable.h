@@ -6,6 +6,7 @@
 #include <QTableWidget>
 
 struct UserOrderTableInfo{
+    quint16 UserOrderTable_OrderID;
     QString UserOrderTable_Productname;
     quint16 UserOrderTable_count;
     QString UserOrderTable_time;
