@@ -23,7 +23,7 @@ public:
     bool purchaseisEmpty();
     QString purchaseAt(int index);
 
-    bool RemoveAllPurchase();
+    void RemoveAllPurchase();
 private:
     static Purchase *instance;
 

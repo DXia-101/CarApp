@@ -63,7 +63,7 @@ QString Purchase::purchaseAt(int index)
     return purchaseNames.at(index);
 }
 
-bool Purchase::RemoveAllPurchase()
+void Purchase::RemoveAllPurchase()
 {
     purchase.clear();
 }
