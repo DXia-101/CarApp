@@ -15,6 +15,7 @@ SOURCES += \
     CustomerOrders.cpp \
     Purchase.cpp \
     PurchaseItem.cpp \
+    ReportForms.cpp \
     ShopWidget.cpp \
     UserInterface.cpp \
     UserOrderInterface.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     CustomerOrders.h \
     Purchase.h \
     PurchaseItem.h \
+    ReportForms.h \
     ShopWidget.h \
     UserInterface.h \
     UserOrderInterface.h \
