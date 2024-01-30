@@ -21,7 +21,6 @@
 Product::Product(QWidget *parent)
     : QWidget{parent}
 {
-    qDebug()<<"进入商品类构造函数";
     //http管理类对象
     m_manager = Common::getNetManager();
     //初始化商品信息表页面
@@ -35,7 +34,6 @@ Product::~Product()
 
 void Product::initTableWidget()
 {
-    qDebug()<<"进入初始化商品信息表页面";
     // 创建按钮和搜索框
     Search_Btn = new QPushButton(tr("搜索"), this);
     Search_LineEdit = new QLineEdit(this);
@@ -175,7 +173,6 @@ void Product::refreshTable()
     // qt默认的请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());
-    qDebug()<<data;
 
     //发送post请求
     QNetworkReply* reply = m_manager->post(request,data);
@@ -192,7 +189,6 @@ void Product::refreshTable()
         }
         //服务器返回数据
         QByteArray array = reply->readAll();
-        cout<<" server return file: "<<array;
 
         reply->deleteLater();//释放
 
@@ -208,7 +204,6 @@ void Product::refreshTable()
 
         //转换为long
         m_productCount = list.at(1).toLong();
-        cout<<"userproductCount = " << m_productCount;
 
         // 清空文件列表信息
         clearproductList();
@@ -262,7 +257,6 @@ void Product::getproductList()
 {
     // 遍历数目，结束条件处理
     if(m_productCount <= 0){ // 函数递归的结束条件
-        cout<< "获取用户文件列表的条件结束";
         refreshproductItems();// 更新表单
         return;
     }else if(m_count > m_productCount) // 如果请求文件数量大于商品数目
@@ -280,8 +274,6 @@ void Product::getproductList()
     QString url = QString("http://%1:%2/product?cmd=%3").arg(login->getIp()).arg(login->getPort()).arg(tmp);
 
     request.setUrl(QUrl(url));
-
-    cout<<"product url: "<<url;
 
     // 设置请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -336,7 +328,6 @@ void Product::getSearchList()
     //遍历数目，结束条件处理
     if(m_SearchCount <= 0) //结束条件，这个条件很重要，函数递归的结束条件
     {
-        cout << "获取用户文件列表条件结束";
         refreshproductItems(); //更新item
         return; //中断函数
     }
@@ -355,7 +346,6 @@ void Product::getSearchList()
 
     url = QString("http://%1:%2/product?cmd=productresult").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl( url )); //设置url
-    cout << "search url: " << url;
 
     //qt默认的请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -386,7 +376,6 @@ void Product::getSearchList()
 
         // 服务器返回用户的数据
         QByteArray array = reply->readAll();
-        cout<<" product search info: "<<array;
 
         reply->deleteLater();
 
@@ -430,7 +419,6 @@ void Product::getproductJsonInfo(QByteArray data)
             QJsonArray array = obj.value("product").toArray();
 
             int size = array.size(); // 数组个数
-            cout<<"size = "<<size;
 
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
@@ -539,13 +527,10 @@ void Product::search()
     QString url = QString("http://%1:%2/product?cmd=productsearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
-    cout<<"Search url: "<<url;
-
     // qt默认的请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());
-    qDebug()<<data;
 
     //发送post请求
     QNetworkReply* reply = m_manager->post(request,data);
@@ -563,7 +548,6 @@ void Product::search()
         }
         //服务器返回数据
         QByteArray array = reply->readAll();
-        cout<<" server return file: "<<array;
 
         reply->deleteLater();//释放
 
@@ -579,9 +563,6 @@ void Product::search()
 
         //转换为long
         m_SearchCount = list.at(1).toLong();
-        cout<<"userSearchCount = " << m_SearchCount;
-
-
         if(m_SearchCount > 0){
             // 说明任然有商品
             s_start = 0;    //从0开始
@@ -629,7 +610,6 @@ void Product::remove()
 {
     //将要上传的信息打包为json格式.
     QByteArray array = setSelectJson();
-    qDebug()<<"upload json data"<<array;
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
@@ -652,7 +632,6 @@ void Product::remove()
             成功:{"code":"023"}
             失败:{"code":"024"}
         */
-        qDebug()<<QString(jsonData);
         // 判断状态码
         if("023" == m_cm.getCode(jsonData))
         {
@@ -688,7 +667,6 @@ void Product::update_save_info()
 {
     //将要上传的信息打包为json格式.
     QByteArray array = setUploadJson();
-    qDebug()<<"upload json data"<<array;
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
@@ -716,7 +694,6 @@ void Product::update_save_info()
             成功:{"code":"020"}
             失败:{"code":"021"}
         */
-        qDebug()<<QString(jsonData);
         // 判断状态码
         if("020" == m_cm.getCode(jsonData))
         {

@@ -8,13 +8,13 @@
 class QPushButton;
 class QLineEdit;
 class QLabel;
+class QCheckBox;
 
 struct ReportFormsInfo{
     int OrderId;
     QString CustomerName;
     QString SubscriptionDate;
     QString DeliveryDate;
-    quint16 FreightCharges;
     QString IsSuccess;
 };
 
@@ -39,27 +39,27 @@ public:
     void refreshTable();
 
     // 清空报表列表
-    void clearproductList();
+    void clearReportFormList();
 
     // 清空所有报表Item
-    void clearproductItems();
+    void clearReportFormItems();
 
     // 报表Item展示
-    void refreshproductItems();
+    void refreshReportFormItems();
 
     // 获取报表信息列表
-    void getproductList();
+    void getReportFormList();
 
     // 获取搜索的报表列表
     void getSearchList();
 
     // 解析报表列表json信息，存放在文件列表中
-    void getproductJsonInfo(QByteArray data);
+    void getReportFormJsonInfo(QByteArray data);
 
     // 设置json包
     QByteArray setGetCountJson(QString user, QString token);
 
-    QByteArray setproductListJson(QString user,QString token,int start,int count);
+    QByteArray setReportFormListJson(QString user,QString token,int start,int count);
 
     //设置上传json包
     QByteArray setUploadJson();
@@ -69,7 +69,7 @@ public:
 
 private:
     //报表信息数目
-    long m_productCount;
+    long m_ReportFormCount;
     //报表检索数目
     long m_SearchCount;
     //报表信息位置起点
@@ -81,54 +81,36 @@ private:
     //每次检索信息个数
     int s_count;
 
-    //更新或上传
-    enum add_or_update{
-        add_status = 0,
-        update_status = 1,
-    };
-    int cur_status;
-
-
     //商品列表
-    QList<productInfo *> m_productList;
+    QList<ReportFormsInfo *> m_ReportFormList;
 
     Common m_cm;
     QNetworkAccessManager* m_manager;
 
     //增加和改变的页面
-    QWidget *product_Edit;
+    QWidget *ReportForm_Edit;
 
     //商品表
     QTableWidget *m_tableWidget;
 
-    //增删改查四个按钮以及搜索框
-    QPushButton *Add_Btn;
-    QPushButton *Delete_Btn;
+    //改查按钮以及搜索框
     QPushButton *Update_Btn;
 
     QPushButton *Search_Btn;
     QLineEdit *Search_LineEdit;
 
     //增加和修改信息输入框
-    QLineEdit *id_Edit;
-    QLineEdit *name_Edit;
-    QLineEdit *store_Edit;
-    QLineEdit *amount_Edit;
-    QLineEdit *sell_Edit;
-    QLineEdit *price_Edit;
+    QLineEdit *DeliveryDate_Edit;
+    QLineEdit *IsSuccess_Edit;
     QPushButton *update_Save_Btn;
     QPushButton *Edit_Cancel_Btn;
 
 signals:
 
 private slots:
-    //搜索商品信息
+    //搜索报表信息
     void search();
-    //添加商品信息
-    void add();
-    //删除商品信息
-    void remove();
-    //更新商品信息
+    //更新报表信息
     void update();
     //保存信息到服务器
     void update_save_info();

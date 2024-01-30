@@ -145,7 +145,6 @@ void UserOrderTable::refreshTable()
     // 获取商品信息数目
     QString url = QString("http://%1:%2/UserOrder?cmd=userOrdercount=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8()));
     request.setUrl(QUrl(url));
-    qDebug()<<"UserOrder Url: "<<url;
     request.setUrl(QUrl(url));
 
     // qt默认的请求头
@@ -217,7 +216,7 @@ void UserOrderTable::refreshUserOrderItems()
             UserOrderTableInfo *tmp = m_UserOrderList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
-            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->UserOrderTable_OrderID)))
+            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->UserOrderTable_OrderID)));
             m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->UserOrderTable_Productname));
             m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->UserOrderTable_count)));
             m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->UserOrderTable_time));
@@ -229,7 +228,6 @@ void UserOrderTable::getUserOrderList()
 {
     // 遍历数目，结束条件处理
     if(m_UserOrderCount <= 0){ // 函数递归的结束条件
-        cout<< "获取用户订单结束";
         refreshUserOrderItems();// 更新表单
         return;
     }else if(m_count > m_UserOrderCount) // 如果请求文件数量大于商品数目
@@ -245,8 +243,6 @@ void UserOrderTable::getUserOrderList()
     QString url = QString("http://%1:%2/UserOrder?cmd=userOrdernormal=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8()));
 
     request.setUrl(QUrl(url));
-
-    cout<<"UserOrder url: "<<url;
 
     // 设置请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -299,7 +295,6 @@ void UserOrderTable::getSearchList()
     //遍历数目，结束条件处理
     if(m_SearchCount <= 0) //结束条件，这个条件很重要，函数递归的结束条件
     {
-        cout << "获取用户文件列表条件结束";
         refreshUserOrderItems(); //更新item
         return; //中断函数
     }
@@ -345,7 +340,6 @@ void UserOrderTable::getSearchList()
 
         // 服务器返回用户的数据
         QByteArray array = reply->readAll();
-        cout<<" UserOrder search info: "<<array;
 
         reply->deleteLater();
 
@@ -387,7 +381,6 @@ void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
             QJsonArray array = obj.value("UserOrder").toArray();
 
             int size = array.size(); // 数组个数
-            cout<<"size = "<<size;
 
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
@@ -503,13 +496,10 @@ void UserOrderTable::search()
     QString url = QString("http://%1:%2/UserOrder?cmd=userOrdersearch=%3&%4").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8())),arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
-    cout<<"Search url: "<<url;
-
     // qt默认的请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());
-    qDebug()<<data;
 
     //发送post请求
     QNetworkReply* reply = m_manager->post(request,data);
@@ -527,7 +517,6 @@ void UserOrderTable::search()
         }
         //服务器返回数据
         QByteArray array = reply->readAll();
-        cout<<" server return file: "<<array;
 
         reply->deleteLater();//释放
 
@@ -543,8 +532,6 @@ void UserOrderTable::search()
 
         //转换为long
         m_SearchCount = list.at(1).toLong();
-        cout<<"userSearchCount = " << m_SearchCount;
-
 
         if(m_SearchCount > 0){
             // 说明任然有商品
@@ -563,7 +550,6 @@ void UserOrderTable::remove()
 {
     //将要上传的信息打包为json格式.
     QByteArray array = setSelectJson();
-    qDebug()<<"upload json data"<<array;
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
@@ -586,7 +572,6 @@ void UserOrderTable::remove()
             成功:{"code":"023"}
             失败:{"code":"024"}
         */
-        qDebug()<<QString(jsonData);
         // 判断状态码
         if("023" == m_cm.getCode(jsonData))
         {
@@ -617,7 +602,6 @@ void UserOrderTable::update_save_info()
 {
     //将要上传的信息打包为json格式.
     QByteArray array = setUploadJson();
-    qDebug()<<"upload json data"<<array;
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
@@ -643,7 +627,6 @@ void UserOrderTable::update_save_info()
             成功:{"code":"020"}
             失败:{"code":"021"}
         */
-        qDebug()<<QString(jsonData);
         // 判断状态码
         if("020" == m_cm.getCode(jsonData))
         {

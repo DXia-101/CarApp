@@ -58,6 +58,8 @@ void MainWindow::InitTreeWidget()
     ui->StackWidget->addWidget(product);
     userorder = new UserOrderInterface();
     ui->StackWidget->addWidget(userorder);
+    reportforms = new ReportForms();
+    ui->StackWidget->addWidget(reportforms);
 
 }
 
@@ -76,6 +78,9 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     }
     if(item->text(column)=="客户订单"){
         ui->StackWidget->setCurrentWidget(userorder);
+    }
+    if(item->text(column)=="项目报表"){
+        ui->StackWidget->setCurrentWidget(reportforms);
     }
 }
 
