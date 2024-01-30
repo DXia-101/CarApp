@@ -107,6 +107,7 @@ QByteArray ShopWidget::GetAllPurchaseJson()
     for(int i = 0;i < size;++i){
         QString name = Purchase::getInstance()->purchaseAt(i);
         tmp.insert(name,Purchase::getInstance()->GetPurchaseCount(name));
+        //tmp.insert("time",QDateTime::currentDateTime());
     }
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){

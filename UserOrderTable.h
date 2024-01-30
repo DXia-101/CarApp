@@ -8,6 +8,7 @@
 struct UserOrderTableInfo{
     QString UserOrderTable_Productname;
     quint16 UserOrderTable_count;
+    QString UserOrderTable_time;
 };
 
 class QPushButton;

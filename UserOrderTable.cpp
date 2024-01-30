@@ -42,8 +42,8 @@ void UserOrderTable::initTableWidget()
 
     m_tableWidget = new QTableWidget(this);
     // 创建商品表格
-    m_tableWidget->setColumnCount(2);
-    m_tableWidget->setHorizontalHeaderLabels({"商品名称","订购数量"});
+    m_tableWidget->setColumnCount(3);
+    m_tableWidget->setHorizontalHeaderLabels({"商品名称","订购数量","订购时间"});
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //设置表格选择整行
@@ -219,6 +219,7 @@ void UserOrderTable::refreshUserOrderItems()
             m_tableWidget->insertRow(row);
             m_tableWidget->setItem(row,0,new QTableWidgetItem(tmp->UserOrderTable_Productname));
             m_tableWidget->setItem(row,1,new QTableWidgetItem(QString::number(tmp->UserOrderTable_count)));
+            m_tableWidget->setItem(row,2,new QTableWidgetItem(tmp->UserOrderTable_time));
         }
     }
 }
@@ -392,6 +393,8 @@ void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
                 UserOrderTableInfo *info = new UserOrderTableInfo;
                 info->UserOrderTable_Productname = tmp.value("UserOrderTable_Productname").toString();
                 info->UserOrderTable_count = tmp.value("UserOrderTable_count").toInt();
+                info->UserOrderTable_Productname = tmp.value("UserOrderTable_time").toString();
+
 
                 //List添加节点
                 m_UserOrderList.append(info);

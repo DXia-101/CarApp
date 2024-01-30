@@ -1,3 +1,5 @@
+//用户购物车界面
+
 #ifndef SHOPWIDGET_H
 #define SHOPWIDGET_H
 
