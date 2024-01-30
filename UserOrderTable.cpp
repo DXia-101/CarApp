@@ -393,7 +393,7 @@ void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
                 UserOrderTableInfo *info = new UserOrderTableInfo;
                 info->UserOrderTable_Productname = tmp.value("UserOrderTable_Productname").toString();
                 info->UserOrderTable_count = tmp.value("UserOrderTable_count").toInt();
-                info->UserOrderTable_Productname = tmp.value("UserOrderTable_time").toString();
+                info->UserOrderTable_time = tmp.value("UserOrderTable_time").toString();
 
 
                 //List添加节点
