@@ -271,7 +271,7 @@ void ReportForms::getReportFormList()
 
        // 服务器返回用户的数据
        QByteArray array = reply->readAll();
-       qDebug()<<"getReportFormList Array:"<<array;
+       //qDebug()<<"getReportFormList Array:"<<array;
 
        reply->deleteLater();
 
@@ -443,7 +443,8 @@ QByteArray ReportForms::setUploadJson()
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        tmp.insert("wares_id",m_tableWidget->item(row, 0)->text().toInt());
+        tmp.insert("OrderID",m_tableWidget->item(row, 0)->text().toInt());
+        tmp.insert("CustomerName",m_tableWidget->item(row, 1)->text());
     }
     tmp.insert("DeliveryDate",DeliveryDate_Edit->text());
     tmp.insert("IsSuccess",IsSuccess_Edit->text());
@@ -560,8 +561,8 @@ void ReportForms::update()
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        DeliveryDate_Edit->setText(m_tableWidget->item(row, 1)->text());
-        IsSuccess_Edit->setText(m_tableWidget->item(row, 2)->text());
+        DeliveryDate_Edit->setText(m_tableWidget->item(row, 2)->text());
+        IsSuccess_Edit->setText(m_tableWidget->item(row, 4)->text());
     }
     ReportForm_Edit->show();
 }
@@ -570,6 +571,7 @@ void ReportForms::update_save_info()
 {
     //将要上传的信息打包为json格式.
     QByteArray array = setUploadJson();
+//    qDebug()<<"上传的array包: "<<array;
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();

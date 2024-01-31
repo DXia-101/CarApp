@@ -50,7 +50,9 @@ void Product::initTableWidget()
     m_tableWidget = new QTableWidget(this);
     // 创建商品表格
     m_tableWidget->setColumnCount(6);
-    m_tableWidget->setHorizontalHeaderLabels({"商品编号","商品名称","计量单位","商品库存","计价单位","单价"});
+    QStringList headerLabels;
+    headerLabels << "商品编号" <<"商品名称"<<"计量单位"<<"商品库存"<<"计价单位"<<"单价";
+    m_tableWidget->setHorizontalHeaderLabels(headerLabels);
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //设置表格选择整行
