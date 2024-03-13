@@ -1,47 +1,40 @@
-#ifndef USERORDERTABLE_H
-#define USERORDERTABLE_H
+#ifndef PRODUCERECORDS_H
+#define PRODUCERECORDS_H
 
 #include <QWidget>
-#include "common/common.h"
-#include <QTableWidget>
 
-struct UserOrderTableInfo{
-    quint16 UserOrderTable_OrderID;
-    QString UserOrderTable_Productname;
-    quint16 UserOrderTable_count;
-    QString UserOrderTable_time;
+struct ProduceInfo{
+    int produce_id;
+    QString product_name;
+    int product_quantity;
+    QString product_time;
+    QJsonArray RawMaterial;
 };
 
-class QPushButton;
-class QLineEdit;
-class QLabel;
 
-class UserOrderTable : public QWidget
+class ProduceRecords : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UserOrderTable(QString userName,QWidget *parent = nullptr);
-    ~UserOrderTable();
+    explicit ProduceRecords(QWidget *parent = nullptr);
+    ~ProduceRecords();
 
     void initTableWidget();
     void initEditWidget();
     QStringList getCountStatus(QByteArray json);
     void refreshTable();
-    void clearUserOrderList();
-    void clearUserOrderItems();
-    void refreshUserOrderItems();
-    void getUserOrderList();
+    void clearProduceRecordsList();
+    void clearProduceRecordsItems();
+    void refreshProduceRecordsItems();
+    void getProduceRecordsList();
     void getSearchList();
-    void getUserOrderJsonInfo(QByteArray data);
+    void getProduceRecordsJsonInfo(QByteArray data);
     QByteArray setGetCountJson(QString user, QString token);
-
-    QByteArray setUserOrderListJson(QString user,QString token,int start,int count);
+    QByteArray setProduceRecordsListJson(QString user,QString token,int start,int count);
     QByteArray setUploadJson();
     QByteArray setSelectJson();
-
 private:
-    QString UserName;
-    long m_UserOrderCount;
+    long m_ProduceRecordsCount;
     long m_SearchCount;
     int m_start;
     int m_count;
@@ -52,15 +45,15 @@ private:
         add_status = 0,
         update_status = 1,
     };
+
     int cur_status;
 
-    QList<UserOrderTableInfo *> m_UserOrderList;
+    QList<productInfo *> m_ProduceRecordsList;
 
     Common m_cm;
     QNetworkAccessManager* m_manager;
-    QWidget *UserOrder_Edit;
+    QWidget *ProduceRecords_Edit;
     QTableWidget *m_tableWidget;
-
     QPushButton *Add_Btn;
     QPushButton *Delete_Btn;
     QPushButton *Update_Btn;
@@ -68,9 +61,12 @@ private:
     QPushButton *Search_Btn;
     QLineEdit *Search_LineEdit;
 
-    QLineEdit *UserOrder_ProductName_Edit;
-    QLineEdit *UserOrder_Count_Edit;
-
+    QLineEdit *id_Edit;
+    QLineEdit *name_Edit;
+    QLineEdit *store_Edit;
+    QLineEdit *amount_Edit;
+    QLineEdit *sell_Edit;
+    QLineEdit *price_Edit;
     QPushButton *update_Save_Btn;
     QPushButton *Edit_Cancel_Btn;
 
@@ -78,6 +74,7 @@ signals:
 
 private slots:
     void search();
+    void add();
     void remove();
     void update();
     void update_save_info();
@@ -85,4 +82,4 @@ private slots:
 
 };
 
-#endif // USERORDERTABLE_H
+#endif // PRODUCERECORDS_H

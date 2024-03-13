@@ -13,6 +13,8 @@ CONFIG += c++17
 
 SOURCES += \
     CustomerOrders.cpp \
+    ProcureRecords.cpp \
+    ProduceRecords.cpp \
     Purchase.cpp \
     PurchaseItem.cpp \
     ReportForms.cpp \
@@ -38,6 +40,8 @@ SOURCES += \
 
 HEADERS += \
     CustomerOrders.h \
+    ProcureRecords.h \
+    ProduceRecords.h \
     Purchase.h \
     PurchaseItem.h \
     ReportForms.h \

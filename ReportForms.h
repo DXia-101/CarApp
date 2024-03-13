@@ -25,7 +25,6 @@ public:
     explicit ReportForms(QWidget *parent = nullptr);
     ~ReportForms();
 
-
     // 初始化报表页面
     void initTableWidget();
 
