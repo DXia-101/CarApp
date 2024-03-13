@@ -44,7 +44,7 @@ void ReportForms::initTableWidget()
     m_tableWidget = new QTableWidget(this);
     // 创建报表表格
     m_tableWidget->setColumnCount(5);
-    m_tableWidget->setHorizontalHeaderLabels({"订单编号","客户名称","订购日期","发货日期","交付状态"});
+    m_tableWidget->setHorizontalHeaderLabels(QStringList() <<"订单编号"<<"客户名称"<<"订购日期"<<"发货日期"<<"交付状态");
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //设置表格选择整行

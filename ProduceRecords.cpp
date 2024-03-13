@@ -21,7 +21,7 @@ ProduceRecords::ProduceRecords(QWidget *parent)
 {
     //http管理类对象
     m_manager = Common::getNetManager();
-    //初始化商品信息表页面
+    //初始化生产记录信息表页面
     initTableWidget();
 }
 
@@ -46,11 +46,11 @@ void ProduceRecords::initTableWidget()
     connect(Update_Btn, &QPushButton::clicked, this, &ProduceRecords::update);
 
     m_tableWidget = new QTableWidget(this);
-    // 创建商品表格
+    // 创建生产记录表格
     m_tableWidget->setColumnCount(5);
     QStringList headerLabels;
-    headerLabels << u8"生产编号" <<u8"产品名称"<<u8"生产数量"<<u8"生产时间"<<u8"消耗原材料";
-    m_tableWidget->setHorizontalHeaderLabels(headerLabels);
+    headerLabels << ;
+    m_tableWidget->setHorizontalHeaderLabels(QStringList() <<u8"生产编号" <<u8"产品名称"<<u8"生产数量"<<u8"生产时间"<<u8"消耗原材料");
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //设置表格选择整行
@@ -71,11 +71,11 @@ void ProduceRecords::initTableWidget()
     hLayout->addWidget(Delete_Btn);
     hLayout->addWidget(Update_Btn);
 
-    // 将水平布局和商品表添加到垂直布局中
+    // 将水平布局和生产记录表添加到垂直布局中
     vLayout->addLayout(hLayout);
     vLayout->addWidget(m_tableWidget);
 
-    //显示商品信息
+    //显示生产记录信息
     refreshTable();
 }
 
@@ -83,38 +83,37 @@ void ProduceRecords::initEditWidget()
 {
     ProduceRecords_Edit = new QWidget();
 
-    QLabel *id_Label = new QLabel(tr("商品ID"));
-    QLabel *name_Label = new QLabel(tr("商品名称"));
-    QLabel *store_Label = new QLabel(tr("计量单位"));
-    QLabel *amount_Label = new QLabel(tr("商品库存"));
-    QLabel *sell_Label = new QLabel(tr("计价单位"));
-    QLabel *price_Label = new QLabel(tr("商品价格"));
+    QLabel *id_Label = new QLabel(tr("生产ID"));
+    QLabel *name_Label = new QLabel(tr("产品名称"));
+    QLabel *number_Label = new QLabel(tr("生产数量"));
+    QLabel *date_Label = new QLabel(tr("生产时间"));
+    QLabel *material_Label = new QLabel(tr("消耗原料"));
     id_Edit  = new QLineEdit();
     name_Edit = new QLineEdit();
-    store_Edit = new QLineEdit();
-    amount_Edit = new QLineEdit();
-    sell_Edit = new QLineEdit();
-    price_Edit = new QLineEdit();
+    number_Edit = new QLineEdit();
+    date_Edit = new QLineEdit();
+    material_table = new QTableWidget();
     update_Save_Btn = new QPushButton(tr("保存"));
     Edit_Cancel_Btn = new QPushButton(tr("取消"));
     connect(update_Save_Btn, &QPushButton::clicked, this, &ProduceRecords::update_save_info);
     connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &ProduceRecords::cancel);
 
+    material_table->setColumnCount(2);
+    material_table->setHorizontalHeaderLabels(QStringList() << "原料名" << "数量");
+
     QGridLayout *EditLayout = new QGridLayout();
     EditLayout->addWidget(id_Label,0,0);
     EditLayout->addWidget(name_Label,1,0);
-    EditLayout->addWidget(store_Label,2,0);
-    EditLayout->addWidget(amount_Label,3,0);
-    EditLayout->addWidget(sell_Label,4,0);
-    EditLayout->addWidget(price_Label,5,0);
+    EditLayout->addWidget(number_Label,2,0);
+    EditLayout->addWidget(date_Label,3,0);
+    EditLayout->addWidget(material_Label,4,0);
     EditLayout->addWidget(id_Edit,0,1);
     EditLayout->addWidget(name_Edit,1,1);
-    EditLayout->addWidget(store_Edit,2,1);
-    EditLayout->addWidget(amount_Edit,3,1);
-    EditLayout->addWidget(sell_Edit,4,1);
-    EditLayout->addWidget(price_Edit,5,1);
-    EditLayout->addWidget(update_Save_Btn,6,0);
-    EditLayout->addWidget(Edit_Cancel_Btn,6,1);
+    EditLayout->addWidget(number_Edit,2,1);
+    EditLayout->addWidget(date_Edit,3,1);
+    EditLayout->addWidget(material_table,4,1);
+    EditLayout->addWidget(update_Save_Btn,5,0);
+    EditLayout->addWidget(Edit_Cancel_Btn,5,1);
     ProduceRecords_Edit->setLayout(EditLayout);
 }
 
@@ -156,7 +155,7 @@ void ProduceRecords::refreshTable()
     //将表格行数清零
     m_tableWidget->setRowCount(0);
 
-    //获取商品信息数目
+    //获取生产记录信息数目
     m_ProduceRecordsCount = 0;
 
     QNetworkRequest request;
@@ -166,8 +165,8 @@ void ProduceRecords::refreshTable()
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
     // 127.0.0.1:80/ProduceRecords?cmd=ProduceRecordscount
-    // 获取商品信息数目
-    QString url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordscount").arg(login->getIp()).arg(login->getPort());
+    // 获取生产记录信息数目
+    QString url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordsCount").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl(url));
 
     // qt默认的请求头
@@ -209,46 +208,46 @@ void ProduceRecords::refreshTable()
         clearProduceRecordsList();
 
         if(m_ProduceRecordsCount > 0){
-            // 说明任然有商品
+            // 说明任然有生产记录
             m_start = 0;    //从0开始
             m_count = 10;   //每次请求10个
 
-            // 获取新的商品列表信息
+            // 获取新的生产记录列表信息
             getProduceRecordsList();
-        }else{//没有商品
+        }else{//没有生产记录
             refreshProduceRecordsItems(); //更新Items
         }
     });
 }
 
-// 清空商品列表
+// 清空生产记录列表
 void ProduceRecords::clearProduceRecordsList()
 {
     m_tableWidget->clear();
 }
 
-// 清空所有商品Item
+// 清空所有生产记录Item
 void ProduceRecords::clearProduceRecordsItems()
 {
     m_ProduceRecordsList.clear();
 }
 
-// 商品Item展示
+// 生产记录Item展示
 void ProduceRecords::refreshProduceRecordsItems()
 {
-    //如果文件列表不为空，显示商品列表
+    //如果文件列表不为空，显示生产记录列表
     if(m_ProduceRecordsList.isEmpty() == false){
         int n = m_ProduceRecordsList.size();
         for(int i = 0;i < n;++i){
-            ProduceRecordsInfo *tmp = m_ProduceRecordsList.at(i);
+            ProduceInfo *tmp = m_ProduceRecordsList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
-            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->ProduceRecords_id)));
-            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->ProduceRecords_name));
-            m_tableWidget->setItem(row,2,new QTableWidgetItem(tmp->ProduceRecords_store_unit));
-            m_tableWidget->setItem(row,3,new QTableWidgetItem(QString::number(tmp->ProduceRecords_amount)));
-            m_tableWidget->setItem(row,4,new QTableWidgetItem(tmp->ProduceRecords_sell_unit));
-            m_tableWidget->setItem(row,5,new QTableWidgetItem(QString::number(tmp->ProduceRecords_price)));
+            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->produce_id)));
+            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->product_name));
+            m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->produce_id)));
+            m_tableWidget->setItem(row,3,new QTableWidgetItem(QString::number(tmp->product_time)));
+            QJsonDocument jsonDoc(tmp->RawMaterial);
+            m_tableWidget->setItem(row,4,new QTableWidgetItem(jsonDoc.toJson(QJsonDocument::Compact)));
         }
     }
 }
@@ -259,7 +258,7 @@ void ProduceRecords::getProduceRecordsList()
     if(m_ProduceRecordsCount <= 0){ // 函数递归的结束条件
         refreshProduceRecordsItems();// 更新表单
         return;
-    }else if(m_count > m_ProduceRecordsCount) // 如果请求文件数量大于商品数目
+    }else if(m_count > m_ProduceRecordsCount) // 如果请求文件数量大于生产记录数目
     {
         m_count = m_ProduceRecordsCount;
     }
@@ -314,10 +313,10 @@ void ProduceRecords::getProduceRecordsList()
 
        // 不是错误码就处理文件列表json信息
        if("015" != m_cm.getCode(array)){
-           // 解析商品列表json信息，存放在文件列表中
+           // 解析生产记录列表json信息，存放在文件列表中
            getProduceRecordsJsonInfo(array);
 
-           //继续获取商品信息列表
+           //继续获取生产记录信息列表
            getProduceRecordsList();
        }
     });
@@ -388,16 +387,16 @@ void ProduceRecords::getSearchList()
 
         // 不是错误码就处理文件列表json信息
         if("015" != m_cm.getCode(array)){
-            // 解析商品列表json信息，存放在文件列表中
+            // 解析生产记录列表json信息，存放在文件列表中
             getProduceRecordsJsonInfo(array);
 
-            //继续获取商品信息列表
+            //继续获取生产记录信息列表
             getSearchList();
         }
     });
 }
 
-// 解析商品列表json信息，存放在文件列表中
+// 解析生产记录列表json信息，存放在文件列表中
 void ProduceRecords::getProduceRecordsJsonInfo(QByteArray data)
 {
     QJsonParseError error;
@@ -501,7 +500,7 @@ QByteArray ProduceRecords::setUploadJson()
     return jsonDocument.toJson();
 }
 
-//搜索商品信息
+//搜索生产记录信息
 void ProduceRecords::search()
 {
     // 清空文件列表信息
@@ -513,7 +512,7 @@ void ProduceRecords::search()
     //将表格行数清零
     m_tableWidget->setRowCount(0);
 
-    //获取商品信息数目
+    //获取生产记录信息数目
     m_SearchCount = 0;
 
     QNetworkRequest request;
@@ -523,7 +522,7 @@ void ProduceRecords::search()
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
     // 127.0.0.1:80/ProduceRecords?cmd=search
-    // 获取商品信息数目
+    // 获取生产记录信息数目
     QString url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordssearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
@@ -564,11 +563,11 @@ void ProduceRecords::search()
         //转换为long
         m_SearchCount = list.at(1).toLong();
         if(m_SearchCount > 0){
-            // 说明任然有商品
+            // 说明任然有生产记录
             s_start = 0;    //从0开始
             s_count = 10;   //每次请求10个
 
-            // 获取新的商品列表信息
+            // 获取新的生产记录列表信息
             getSearchList();
         }else{//没有文件
             refreshProduceRecordsItems(); //更新表
@@ -576,7 +575,7 @@ void ProduceRecords::search()
     });
 }
 
-//添加商品信息
+//添加生产记录信息
 void ProduceRecords::add()
 {
     cur_status = add_status;
@@ -605,7 +604,7 @@ QByteArray ProduceRecords::setSelectJson(){
     return jsonDocument.toJson();
 }
 
-//删除商品信息
+//删除生产记录信息
 void ProduceRecords::remove()
 {
     //将要上传的信息打包为json格式.
@@ -645,7 +644,7 @@ void ProduceRecords::remove()
     });
 }
 
-//更新商品信息
+//更新生产记录信息
 void ProduceRecords::update()
 {
     cur_status = update_status;
@@ -724,4 +723,27 @@ void ProduceRecords::cancel()
     sell_Edit->clear();
     price_Edit->clear();
     ProduceRecords_Edit->hide();
+}
+
+void ProduceRecords::SaveMaterialInfo()
+{
+    QJsonArray jsonArray;
+
+    for (int row = 0; row < tableWidget->rowCount(); ++row) {
+        QTableWidgetItem *nameItem = tableWidget->item(row, 0);
+        QTableWidgetItem *quantityItem = tableWidget->item(row, 1);
+
+        if (nameItem && quantityItem) {
+            QString name = nameItem->text();
+            int quantity = quantityItem->text().toInt();
+
+            QJsonObject jsonObject;
+            jsonObject["material_name"] = name;
+            jsonObject["number"] = quantity;
+
+            jsonArray.append(jsonObject);
+        }
+    }
+
+    materialInfo = jsonArray;
 }

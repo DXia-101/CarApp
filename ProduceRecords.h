@@ -40,6 +40,7 @@ private:
     int m_count;
     int s_start;
     int s_count;
+    QJsonArray materialInfo;
 
     enum add_or_update{
         add_status = 0,
@@ -48,7 +49,7 @@ private:
 
     int cur_status;
 
-    QList<productInfo *> m_ProduceRecordsList;
+    QList<ProduceInfo *> m_ProduceRecordsList;
 
     Common m_cm;
     QNetworkAccessManager* m_manager;
@@ -63,10 +64,9 @@ private:
 
     QLineEdit *id_Edit;
     QLineEdit *name_Edit;
-    QLineEdit *store_Edit;
-    QLineEdit *amount_Edit;
-    QLineEdit *sell_Edit;
-    QLineEdit *price_Edit;
+    QLineEdit *number_Edit;
+    QLineEdit *date_Edit;
+    QTableWidget *material_table;
     QPushButton *update_Save_Btn;
     QPushButton *Edit_Cancel_Btn;
 
@@ -79,7 +79,7 @@ private slots:
     void update();
     void update_save_info();
     void cancel();
-
+    void SaveMaterialInfo();
 };
 
 #endif // PRODUCERECORDS_H

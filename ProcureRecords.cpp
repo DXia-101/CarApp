@@ -724,3 +724,4 @@ void ProcureRecords::cancel()
     price_Edit->clear();
     ProcureRecords_Edit->hide();
 }
+

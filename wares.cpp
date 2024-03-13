@@ -51,7 +51,7 @@ void Wares::initTableWidget()
     m_tableWidget = new QTableWidget(this);
     // 创建原料表格
     m_tableWidget->setColumnCount(6);
-    m_tableWidget->setHorizontalHeaderLabels({"原料编号","原料名称","计量单位","原料库存","计价单位","单价"});
+    m_tableWidget->setHorizontalHeaderLabels(QStringList() <<"原料编号"<<"原料名称"<<"计量单位"<<"原料库存"<<"计价单位"<<"单价");
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     //设置表格选择整行

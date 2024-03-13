@@ -43,9 +43,7 @@ void UserOrderTable::initTableWidget()
     m_tableWidget = new QTableWidget(this);
     // 创建商品表格
     m_tableWidget->setColumnCount(4);
-    QStringList headerLabels;
-    headerLabels << "订单ID" <<"商品名称"<<"订购数量"<<"订购时间";
-    m_tableWidget->setHorizontalHeaderLabels(headerLabels);
+    m_tableWidget->setHorizontalHeaderLabels(QStringList() <<"订单ID" <<"商品名称"<<"订购数量"<<"订购时间");
 
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);

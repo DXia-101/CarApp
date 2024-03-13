@@ -15,8 +15,6 @@ struct productInfo{
     double product_price;
 };
 
-
-
 class QPushButton;
 class QLineEdit;
 class QLabel;
