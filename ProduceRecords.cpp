@@ -19,9 +19,7 @@
 ProduceRecords::ProduceRecords(QWidget *parent)
     : QWidget{parent}
 {
-
     m_manager = Common::getNetManager();
-    //初始化生产记录信息表页面
     initTableWidget();
 }
 
@@ -39,14 +37,12 @@ void ProduceRecords::initTableWidget()
     Delete_Btn = new QPushButton(tr("删除"), this);
     Update_Btn = new QPushButton(tr("更新"), this);
 
-
     connect(Search_Btn, &QPushButton::clicked, this, &ProduceRecords::search);
     connect(Add_Btn, &QPushButton::clicked, this, &ProduceRecords::add);
     connect(Delete_Btn, &QPushButton::clicked, this, &ProduceRecords::remove);
     connect(Update_Btn, &QPushButton::clicked, this, &ProduceRecords::update);
 
     m_tableWidget = new QTableWidget(this);
-    // 创建生产记录表格
     m_tableWidget->setColumnCount(5);
     QStringList headerLabels;
     m_tableWidget->setHorizontalHeaderLabels(QStringList() <<u8"生产编号" <<u8"产品名称"<<u8"生产数量"<<u8"生产时间"<<u8"消耗原材料");
@@ -57,11 +53,8 @@ void ProduceRecords::initTableWidget()
 
     m_tableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-
-
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     QHBoxLayout *hLayout = new QHBoxLayout();
-
 
     hLayout->addWidget(Search_Btn);
     hLayout->addWidget(Search_LineEdit);
@@ -144,24 +137,18 @@ void ProduceRecords::refreshTable()
 
     clearProduceRecordsItems();
 
-
     m_tableWidget->setRowCount(0);
 
     m_ProduceRecordsCount = 0;
 
     QNetworkRequest request;
-
-
-
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    QString url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordsCount").arg(login->getIp()).arg(login->getPort());
+    QString url = QString("http://%1:%2/Produce?cmd=ProduceCount").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl(url));
-
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());
-
 
     QNetworkReply* reply = m_manager->post(request,data);
     if(reply == NULL){
@@ -180,16 +167,12 @@ void ProduceRecords::refreshTable()
 
         reply->deleteLater();
 
-
         QStringList list = getCountStatus(array);
-
 
         if(list.at(0) == "111"){
             QMessageBox::warning(this,"账户异常","请重新登录!");
-            //emit
             return;
         }
-
 
         m_ProduceRecordsCount = list.at(1).toLong();
 
@@ -248,7 +231,7 @@ void ProduceRecords::getProduceRecordsList()
 
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    QString url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordsnormal").arg(login->getIp()).arg(login->getPort());
+    QString url = QString("http://%1:%2/Produce?cmd=ProduceNormal").arg(login->getIp()).arg(login->getPort());
 
     request.setUrl(QUrl(url));
 
@@ -259,13 +242,11 @@ void ProduceRecords::getProduceRecordsList()
     m_start += m_count;
     m_ProduceRecordsCount -= m_count;
 
-
     QNetworkReply * reply = m_manager->post(request,data);
     if(reply == NULL){
         cout<<"getProduceRecordsList reply == NULL";
         return;
     }
-
 
     connect(reply,&QNetworkReply::finished,[=](){
        if(reply->error() != QNetworkReply::NoError){
@@ -274,18 +255,15 @@ void ProduceRecords::getProduceRecordsList()
            return;
        }
 
-
        QByteArray array = reply->readAll();
 
        reply->deleteLater();
-
 
        if("111" == m_cm.getCode(array)){
            QMessageBox::warning(this,"账户异常","请重新登录！");
 
            return;
        }
-
 
        if("015" != m_cm.getCode(array)){
            getProduceRecordsJsonInfo(array);
@@ -315,18 +293,15 @@ void ProduceRecords::getSearchList()
 
     QString url;
 
-    url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordsresult").arg(login->getIp()).arg(login->getPort());
+    url = QString("http://%1:%2/Produce?cmd=ProduceResult").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl( url ));
-
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
     QByteArray data = setProduceRecordsListJson( login->getUser(), login->getToken(), s_start, s_count);
 
-
     s_start += s_count;
     m_SearchCount -= s_count;
-
 
     QNetworkReply * reply = m_manager->post( request, data );
     if(reply == NULL)
@@ -334,7 +309,6 @@ void ProduceRecords::getSearchList()
         cout << "reply == NULL";
         return;
     }
-
 
     connect(reply, &QNetworkReply::finished, [=]()
     {
@@ -344,19 +318,15 @@ void ProduceRecords::getSearchList()
             reply->deleteLater();
             return;
         }
-
-
         QByteArray array = reply->readAll();
 
         reply->deleteLater();
-
 
         if("111" == m_cm.getCode(array)){
             QMessageBox::warning(this,"账户异常","请重新登录！");
 
             return;
         }
-
 
         if("015" != m_cm.getCode(array)){
             getProduceRecordsJsonInfo(array);
@@ -378,10 +348,7 @@ void ProduceRecords::getProduceRecordsJsonInfo(QByteArray data)
         if(doc.isObject()){
 
             QJsonObject obj = doc.object();
-
-
             QJsonArray array = obj.value("ProduceRecords").toArray();
-
             int size = array.size();
 
             for(int i = 0;i < size;++i){
@@ -392,9 +359,8 @@ void ProduceRecords::getProduceRecordsJsonInfo(QByteArray data)
                 info->product_quantity = tmp.value("product_quantity").toInt();
                 info->product_time = tmp.value("product_time").toString();
                 info->RawMaterial = tmp.value("RawMaterial").toArray();  //--------------------------这里有待商榷
-                //List添加节点
-                m_ProduceRecordsList.append(info);
 
+                m_ProduceRecordsList.append(info);
             }
         }
     }else{
@@ -402,13 +368,11 @@ void ProduceRecords::getProduceRecordsJsonInfo(QByteArray data)
     }
 }
 
-
 QByteArray ProduceRecords::setGetCountJson(QString user, QString token)
 {
     QMap<QString, QVariant> tmp;
     tmp.insert("user", user);
     tmp.insert("token", token);
-
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if ( jsonDocument.isNull() )
     {
@@ -419,7 +383,6 @@ QByteArray ProduceRecords::setGetCountJson(QString user, QString token)
 
     return jsonDocument.toJson();
 }
-
 
 QByteArray ProduceRecords::setProduceRecordsListJson(QString user, QString token, int start, int count)
 {
@@ -458,20 +421,15 @@ QByteArray ProduceRecords::setUploadJson()
 void ProduceRecords::search()
 {
     clearProduceRecordsList();
-
     clearProduceRecordsItems();
-
 
     m_tableWidget->setRowCount(0);
 
     m_SearchCount = 0;
 
     QNetworkRequest request;
-
-
-
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordssearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/Produce?cmd=ProduceSearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -495,17 +453,12 @@ void ProduceRecords::search()
         QByteArray array = reply->readAll();
 
         reply->deleteLater();
-
-
         QStringList list = getCountStatus(array);
-
 
         if(list.at(0) == "111"){
             QMessageBox::warning(this,"账户异常","请重新登录!");
-            //emit
             return;
         }
-
 
         m_SearchCount = list.at(1).toLong();
         if(m_SearchCount > 0){
@@ -551,7 +504,7 @@ void ProduceRecords::remove()
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url= QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordsdelete").arg(login->getIp()).arg(login->getPort());
+    QString url= QString("http://%1:%2/Produce?cmd=ProduceDelete").arg(login->getIp()).arg(login->getPort());
 
     request.setUrl(QUrl(url));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
@@ -585,7 +538,6 @@ void ProduceRecords::update()
         number_Edit->setText(m_tableWidget->item(row, 2)->text());
         date_Edit->setText(m_tableWidget->item(row, 3)->text());
         //material_table->setText(m_tableWidget->item(row, 4)->text());//--------------------------这里有待商榷
-
     }
     ProduceRecords_Edit->show();
 }
@@ -598,9 +550,9 @@ void ProduceRecords::update_save_info()
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
     QString url;
     if(update_status == cur_status){
-        url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordsupdate").arg(login->getIp()).arg(login->getPort());
+        url = QString("http://%1:%2/Produce?cmd=ProduceUpdate").arg(login->getIp()).arg(login->getPort());
     }else if(add_status == cur_status){
-        url = QString("http://%1:%2/ProduceRecords?cmd=ProduceRecordsadd").arg(login->getIp()).arg(login->getPort());
+        url = QString("http://%1:%2/Produce?cmd=ProduceAdd").arg(login->getIp()).arg(login->getPort());
     }
 
     request.setUrl(QUrl(url));

@@ -48,8 +48,7 @@ void ProcureRecords::initTableWidget()
     m_tableWidget = new QTableWidget(this);
     m_tableWidget->setColumnCount(4);
     QStringList headerLabels;
-    headerLabels << u8"采购编号" <<u8"原料名称"<<u8"采购数量"<<u8"采购时间";
-    m_tableWidget->setHorizontalHeaderLabels(headerLabels);
+    m_tableWidget->setHorizontalHeaderLabels(QStringList()<<u8"采购编号" <<u8"原料名称"<<u8"采购数量"<<u8"采购时间");
 
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -57,10 +56,8 @@ void ProcureRecords::initTableWidget()
 
     m_tableWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     QHBoxLayout *hLayout = new QHBoxLayout();
-
 
     hLayout->addWidget(Search_Btn);
     hLayout->addWidget(Search_LineEdit);
@@ -150,10 +147,8 @@ void ProcureRecords::refreshTable()
 
     QNetworkRequest request;
 
-    
-    
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url = QString("http://%1:%2/ProcureRecords?cmd=ProcureRecordscount").arg(login->getIp()).arg(login->getPort());
+    QString url = QString("http://%1:%2/Procure?cmd=ProcureCount").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl(url));
 
     
@@ -245,9 +240,7 @@ void ProcureRecords::getProcureList()
 
     LoginInfoInstance *login = LoginInfoInstance::getInstance();    
 
-    QString tmp = QString("ProcureRecordsnormal");
-
-    QString url = QString("http://%1:%2/ProcureRecords?cmd=%3").arg(login->getIp()).arg(login->getPort()).arg(tmp);
+    QString url = QString("http://%1:%2/Procure?cmd=ProcureNormal").arg(login->getIp()).arg(login->getPort());
 
     request.setUrl(QUrl(url));
 
@@ -272,19 +265,16 @@ void ProcureRecords::getProcureList()
            return;
        }
 
-       
        QByteArray array = reply->readAll();
 
        reply->deleteLater();
 
-       
        if("111" == m_cm.getCode(array)){
            QMessageBox::warning(this,"账户异常","请重新登录！");
 
            return;
        }
 
-       
        if("015" != m_cm.getCode(array)){
            getProcureJsonInfo(array);
            getProcureList();
@@ -294,7 +284,6 @@ void ProcureRecords::getProcureList()
 
 void ProcureRecords::getSearchList()
 {
-    
     if(m_SearchCount <= 0) 
     {
         refreshProcureItems();
@@ -305,27 +294,20 @@ void ProcureRecords::getSearchList()
         s_count = m_SearchCount;
     }
 
-
     QNetworkRequest request; 
-
-    
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-
     QString url;
 
-    url = QString("http://%1:%2/ProcureRecords?cmd=ProcureRecordsresult").arg(login->getIp()).arg(login->getPort());
+    url = QString("http://%1:%2/Procure?cmd=ProcureResult").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl( url )); 
 
-    
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
     QByteArray data = setProcureListJson( login->getUser(), login->getToken(), s_start, s_count);
 
-    
     s_start += s_count;
     m_SearchCount -= s_count;
 
-    
     QNetworkReply * reply = m_manager->post( request, data );
     if(reply == NULL)
     {
@@ -333,7 +315,6 @@ void ProcureRecords::getSearchList()
         return;
     }
 
-    
     connect(reply, &QNetworkReply::finished, [=]()
     {
         if (reply->error() != QNetworkReply::NoError) 
@@ -343,19 +324,16 @@ void ProcureRecords::getSearchList()
             return;
         }
 
-        
         QByteArray array = reply->readAll();
 
         reply->deleteLater();
 
-        
         if("111" == m_cm.getCode(array)){
             QMessageBox::warning(this,"账户异常","请重新登录！");
 
             return;
         }
 
-        
         if("015" != m_cm.getCode(array)){
             getProcureJsonInfo(array);
             getSearchList();
@@ -396,7 +374,6 @@ void ProcureRecords::getProcureJsonInfo(QByteArray data)
         cout<<"getProcureRecordsJsonInfo error = "<<error.errorString();
     }
 }
-
 
 QByteArray ProcureRecords::setGetCountJson(QString user, QString token)
 {
@@ -461,20 +438,14 @@ void ProcureRecords::search()
     m_SearchCount = 0;
 
     QNetworkRequest request;
-
-    
-    
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    QString url = QString("http://%1:%2/ProcureRecords?cmd=ProcureRecordssearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/Procure?cmd=ProcureSearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
-    
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
-
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());
 
-    
     QNetworkReply* reply = m_manager->post(request,data);
     if(reply == NULL){
         qDebug()<<"reply == NULL";
@@ -490,19 +461,13 @@ void ProcureRecords::search()
         }
         
         QByteArray array = reply->readAll();
-
         reply->deleteLater();
-
-        
         QStringList list = getCountStatus(array);
-
-        
         if(list.at(0) == "111"){
             QMessageBox::warning(this,"账户异常","请重新登录!");
             return;
         }
 
-        
         m_SearchCount = list.at(1).toLong();
         if(m_SearchCount > 0){
 
@@ -549,7 +514,7 @@ void ProcureRecords::remove()
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url= QString("http://%1:%2/ProcureRecords?cmd=ProcureRecordsdelete").arg(login->getIp()).arg(login->getPort());
+    QString url= QString("http://%1:%2/Procure?cmd=ProcureDelete").arg(login->getIp()).arg(login->getPort());
 
     request.setUrl(QUrl(url));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
@@ -595,9 +560,9 @@ void ProcureRecords::update_save_info()
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
     QString url;
     if(update_status == cur_status){
-        url = QString("http://%1:%2/ProcureRecords?cmd=ProcureRecordsupdate").arg(login->getIp()).arg(login->getPort());
+        url = QString("http://%1:%2/Procure?cmd=ProcureUpdate").arg(login->getIp()).arg(login->getPort());
     }else if(add_status == cur_status){
-        url = QString("http://%1:%2/ProcureRecords?cmd=ProcureRecordsadd").arg(login->getIp()).arg(login->getPort());
+        url = QString("http://%1:%2/Procure?cmd=ProcureAdd").arg(login->getIp()).arg(login->getPort());
     }
 
     request.setUrl(QUrl(url));
