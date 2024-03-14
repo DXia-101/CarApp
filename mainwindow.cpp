@@ -60,6 +60,8 @@ void MainWindow::InitTreeWidget()
     ui->StackWidget->addWidget(userorder);
     reportforms = new ReportForms();
     ui->StackWidget->addWidget(reportforms);
+    produce = new ProduceRecords();
+    ui->StackWidget->addWidget(produce);
 
 }
 
@@ -81,6 +83,9 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     }
     if(item->text(column)=="项目报表"){
         ui->StackWidget->setCurrentWidget(reportforms);
+    }
+    if(item->text(column)=="生产记录"){
+        ui->StackWidget->setCurrentWidget(produce);
     }
 }
 

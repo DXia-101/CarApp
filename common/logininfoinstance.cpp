@@ -34,7 +34,6 @@ LoginInfoInstance *LoginInfoInstance::getInstance()
     return instance;
 }
 
-堆区空间
 void LoginInfoInstance::destroy()
 {
     if(NULL != LoginInfoInstance::instance)

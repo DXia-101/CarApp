@@ -39,7 +39,6 @@ private:
     public:
         ~Garbo()
         {
-            堆区空间
             LoginInfoInstance::destroy();
         }
     };

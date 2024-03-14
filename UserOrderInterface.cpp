@@ -23,7 +23,6 @@ UserOrderInterface::~UserOrderInterface()
 void UserOrderInterface::InitUserTree()
 {
     GetUserNames();
-
 }
 
 void UserOrderInterface::GetUserNames()

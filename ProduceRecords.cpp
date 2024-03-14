@@ -71,40 +71,49 @@ void ProduceRecords::initTableWidget()
 
 void ProduceRecords::initEditWidget()
 {
-    ProduceRecords_Edit = new QWidget();
-
-    QLabel *id_Label = new QLabel(tr("生产ID"));
-    QLabel *name_Label = new QLabel(tr("产品名称"));
-    QLabel *number_Label = new QLabel(tr("生产数量"));
-    QLabel *date_Label = new QLabel(tr("生产时间"));
-    QLabel *material_Label = new QLabel(tr("消耗原料"));
-    id_Edit  = new QLineEdit();
+    Produce_Edit = new QWidget();
+    QLabel* id_Label = new QLabel(tr("生产ID"));
+    QLabel* name_Label = new QLabel(tr("产品名称"));
+    QLabel* number_Label = new QLabel(tr("生产数量"));
+    QLabel* date_Label = new QLabel(tr("生产时间"));
+    QLabel* material_Label = new QLabel(tr("消耗原料"));
+    id_Edit = new QLineEdit();
     name_Edit = new QLineEdit();
     number_Edit = new QLineEdit();
     date_Edit = new QLineEdit();
     material_table = new QTableWidget();
     update_Save_Btn = new QPushButton(tr("保存"));
     Edit_Cancel_Btn = new QPushButton(tr("取消"));
+    add_Material_Btn = new QPushButton(tr("添加原料"));
+    delete_Material_Btn = new QPushButton(tr("删除原料"));
+
     connect(update_Save_Btn, &QPushButton::clicked, this, &ProduceRecords::update_save_info);
     connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &ProduceRecords::cancel);
+    connect(add_Material_Btn, &QPushButton::clicked, this, &ProduceRecords::add_material);
+    connect(delete_Material_Btn, &QPushButton::clicked, this, &ProduceRecords::delete_material);
 
     material_table->setColumnCount(2);
     material_table->setHorizontalHeaderLabels(QStringList() << "原料名" << "数量");
 
-    QGridLayout *EditLayout = new QGridLayout();
-    EditLayout->addWidget(id_Label,0,0);
-    EditLayout->addWidget(name_Label,1,0);
-    EditLayout->addWidget(number_Label,2,0);
-    EditLayout->addWidget(date_Label,3,0);
-    EditLayout->addWidget(material_Label,4,0);
-    EditLayout->addWidget(id_Edit,0,1);
-    EditLayout->addWidget(name_Edit,1,1);
-    EditLayout->addWidget(number_Edit,2,1);
-    EditLayout->addWidget(date_Edit,3,1);
-    EditLayout->addWidget(material_table,4,1);
-    EditLayout->addWidget(update_Save_Btn,5,0);
-    EditLayout->addWidget(Edit_Cancel_Btn,5,1);
-    ProduceRecords_Edit->setLayout(EditLayout);
+    QGridLayout* EditLayout = new QGridLayout();
+    EditLayout->addWidget(id_Label, 0, 0);
+    EditLayout->addWidget(name_Label, 1, 0);
+    EditLayout->addWidget(number_Label, 2, 0);
+    EditLayout->addWidget(date_Label, 3, 0);
+    EditLayout->addWidget(material_Label, 4, 0);
+    EditLayout->addWidget(id_Edit, 0, 1);
+    EditLayout->addWidget(name_Edit, 1, 1);
+    EditLayout->addWidget(number_Edit, 2, 1);
+    EditLayout->addWidget(date_Edit, 3, 1);
+    EditLayout->addWidget(material_table, 4, 1);
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    EditLayout->addLayout(buttonLayout,5,1);
+    buttonLayout->addWidget(add_Material_Btn);
+    buttonLayout->addWidget(delete_Material_Btn);
+    EditLayout->addWidget(update_Save_Btn, 6, 0);
+    EditLayout->addWidget(Edit_Cancel_Btn, 6, 1);
+
+    Produce_Edit->setLayout(EditLayout);
 }
 
 
@@ -133,13 +142,12 @@ QStringList ProduceRecords::getCountStatus(QByteArray json)
 
 void ProduceRecords::refreshTable()
 {
-    clearProduceRecordsList();
-
-    clearProduceRecordsItems();
+    clearProduceList();
+    clearProduceItems();
 
     m_tableWidget->setRowCount(0);
 
-    m_ProduceRecordsCount = 0;
+    m_ProduceCount = 0;
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
@@ -174,37 +182,37 @@ void ProduceRecords::refreshTable()
             return;
         }
 
-        m_ProduceRecordsCount = list.at(1).toLong();
+        m_ProduceCount = list.at(1).toLong();
 
-        clearProduceRecordsList();
+        clearProduceList();
 
-        if(m_ProduceRecordsCount > 0){
+        if(m_ProduceCount > 0){
 
             m_start = 0;
             m_count = 10;
-            getProduceRecordsList();
+            getProduceList();
         }else{
-            refreshProduceRecordsItems();
+            refreshProduceItems();
         }
     });
 }
 
-void ProduceRecords::clearProduceRecordsList()
+void ProduceRecords::clearProduceList()
 {
     m_tableWidget->clear();
 }
 
-void ProduceRecords::clearProduceRecordsItems()
+void ProduceRecords::clearProduceItems()
 {
-    m_ProduceRecordsList.clear();
+    m_ProduceList.clear();
 }
 
-void ProduceRecords::refreshProduceRecordsItems()
+void ProduceRecords::refreshProduceItems()
 {
-    if(m_ProduceRecordsList.isEmpty() == false){
-        int n = m_ProduceRecordsList.size();
+    if(m_ProduceList.isEmpty() == false){
+        int n = m_ProduceList.size();
         for(int i = 0;i < n;++i){
-            ProduceInfo *tmp = m_ProduceRecordsList.at(i);
+            ProduceInfo *tmp = m_ProduceList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
             m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->produce_id)));
@@ -217,14 +225,14 @@ void ProduceRecords::refreshProduceRecordsItems()
     }
 }
 
-void ProduceRecords::getProduceRecordsList()
+void ProduceRecords::getProduceList()
 {
-    if(m_ProduceRecordsCount <= 0){
-        refreshProduceRecordsItems();
+    if(m_ProduceCount <= 0){
+        refreshProduceItems();
         return;
-    }else if(m_count > m_ProduceRecordsCount)
+    }else if(m_count > m_ProduceCount)
     {
-        m_count = m_ProduceRecordsCount;
+        m_count = m_ProduceCount;
     }
 
     QNetworkRequest request;
@@ -237,10 +245,10 @@ void ProduceRecords::getProduceRecordsList()
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setProduceRecordsListJson(login->getUser(),login->getToken(),m_start,m_count);
+    QByteArray data = setProduceListJson(login->getUser(),login->getToken(),m_start,m_count);
 
     m_start += m_count;
-    m_ProduceRecordsCount -= m_count;
+    m_ProduceCount -= m_count;
 
     QNetworkReply * reply = m_manager->post(request,data);
     if(reply == NULL){
@@ -266,8 +274,8 @@ void ProduceRecords::getProduceRecordsList()
        }
 
        if("015" != m_cm.getCode(array)){
-           getProduceRecordsJsonInfo(array);
-           getProduceRecordsList();
+           getProduceJsonInfo(array);
+           getProduceList();
        }
     });
 }
@@ -277,7 +285,7 @@ void ProduceRecords::getSearchList()
 
     if(m_SearchCount <= 0)
     {
-        refreshProduceRecordsItems();
+        refreshProduceItems();
         return;
     }
     else if(s_count > m_SearchCount)
@@ -298,7 +306,7 @@ void ProduceRecords::getSearchList()
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setProduceRecordsListJson( login->getUser(), login->getToken(), s_start, s_count);
+    QByteArray data = setProduceListJson( login->getUser(), login->getToken(), s_start, s_count);
 
     s_start += s_count;
     m_SearchCount -= s_count;
@@ -329,20 +337,20 @@ void ProduceRecords::getSearchList()
         }
 
         if("015" != m_cm.getCode(array)){
-            getProduceRecordsJsonInfo(array);
+            getProduceJsonInfo(array);
             getSearchList();
         }
     });
 }
 
-void ProduceRecords::getProduceRecordsJsonInfo(QByteArray data)
+void ProduceRecords::getProduceJsonInfo(QByteArray data)
 {
     QJsonParseError error;
 
     QJsonDocument doc = QJsonDocument::fromJson(data,&error);
     if(error.error == QJsonParseError::NoError){
         if(doc.isNull() || doc.isEmpty()){
-            cout<<" m_ProduceRecordsList doc.isNUll() || doc.isEmpty() ";
+            cout<<" m_ProduceList doc.isNUll() || doc.isEmpty() ";
             return;
         }
         if(doc.isObject()){
@@ -358,9 +366,9 @@ void ProduceRecords::getProduceRecordsJsonInfo(QByteArray data)
                 info->product_name = tmp.value("product_name").toString();
                 info->product_quantity = tmp.value("product_quantity").toInt();
                 info->product_time = tmp.value("product_time").toString();
-                info->RawMaterial = tmp.value("RawMaterial").toArray();  //--------------------------这里有待商榷
+                info->RawMaterial = tmp.value("RawMaterial").toArray();
 
-                m_ProduceRecordsList.append(info);
+                m_ProduceList.append(info);
             }
         }
     }else{
@@ -379,12 +387,10 @@ QByteArray ProduceRecords::setGetCountJson(QString user, QString token)
         cout << "setGetCountJson jsonDocument.isNull() ";
         return "";
     }
-
-
     return jsonDocument.toJson();
 }
 
-QByteArray ProduceRecords::setProduceRecordsListJson(QString user, QString token, int start, int count)
+QByteArray ProduceRecords::setProduceListJson(QString user, QString token, int start, int count)
 {
     QMap<QString,QVariant> tmp;
     tmp.insert("user",user);
@@ -408,20 +414,40 @@ QByteArray ProduceRecords::setUploadJson()
     tmp.insert("product_name",name_Edit->text());
     tmp.insert("product_quantity",number_Edit->text().toInt());
     tmp.insert("product_time",date_Edit->text());
-    //tmp.insert("RawMaterial",sell_Edit->text());//--------------------------这里有待商榷
 
-    QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
-    if(jsonDocument.isNull()){
-        cout<<"setUploadJson jsonDocument.isNull()";
+    QJsonArray jsonArray;
+    QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
+
+    foreach (QModelIndex index, selectedRows) {
+        int row = index.row();
+        QString materialName = m_tableWidget->item(row, 0)->text();
+        int quantity = m_tableWidget->item(row, 1)->text().toInt();
+
+        QJsonObject jsonObject;
+        jsonObject["material_name"] = materialName;
+        jsonObject["quantity"] = quantity;
+
+        jsonArray.append(jsonObject);
+    }
+
+    QJsonObject jsonDocumentObject;
+    jsonDocumentObject["data"] = QJsonObject::fromVariantMap(tmp);
+    jsonDocumentObject["material_table"] = jsonArray;
+
+    QJsonDocument jsonDocument(jsonDocumentObject);
+
+    if (jsonDocument.isNull()) {
+        cout << "setUploadJson jsonDocument.isNull()";
         return "";
     }
+
     return jsonDocument.toJson();
 }
 
 void ProduceRecords::search()
 {
-    clearProduceRecordsList();
-    clearProduceRecordsItems();
+    clearProduceList();
+    clearProduceItems();
 
     m_tableWidget->setRowCount(0);
 
@@ -466,7 +492,7 @@ void ProduceRecords::search()
             s_count = 10;
             getSearchList();
         }else{
-            refreshProduceRecordsItems();
+            refreshProduceItems();
         }
     });
 }
@@ -475,7 +501,7 @@ void ProduceRecords::add()
 {
     cur_status = add_status;
     initEditWidget();
-    ProduceRecords_Edit->show();
+    Produce_Edit->show();
 }
 
 QByteArray ProduceRecords::setSelectJson(){
@@ -537,9 +563,35 @@ void ProduceRecords::update()
         name_Edit->setText(m_tableWidget->item(row, 1)->text());
         number_Edit->setText(m_tableWidget->item(row, 2)->text());
         date_Edit->setText(m_tableWidget->item(row, 3)->text());
-        //material_table->setText(m_tableWidget->item(row, 4)->text());//--------------------------这里有待商榷
+        // 获取 JSON 数据并解析为 QJsonArray
+        QTableWidgetItem* jsonItem = m_tableWidget->item(row, 4);
+        QString jsonString = jsonItem->text();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonString.toUtf8());
+        QJsonArray jsonArray = jsonDoc.array();
+
+        // 清空原来的 material_table
+        material_table->clear();
+        material_table->setRowCount(0);
+        material_table->setColumnCount(2);
+        material_table->setHorizontalHeaderLabels(QStringList() << "原料名" << "数量");
+
+        int materialRowCount = jsonArray.size();
+        material_table->setRowCount(materialRowCount);
+
+        for (int i = 0; i < materialRowCount; ++i) {
+            QJsonObject jsonObject = jsonArray[i].toObject();
+            QString materialName = jsonObject.value("material_name").toString();
+            int materialQuantity = jsonObject.value("quantity").toInt();
+
+            QTableWidgetItem* nameItem = new QTableWidgetItem(materialName);
+            QTableWidgetItem* quantityItem = new QTableWidgetItem(QString::number(materialQuantity));
+
+            material_table->setItem(i, 0, nameItem);
+            material_table->setItem(i, 1, quantityItem);
+        }
     }
-    ProduceRecords_Edit->show();
+
+    Produce_Edit->show();
 }
 
 void ProduceRecords::update_save_info()
@@ -572,11 +624,11 @@ void ProduceRecords::update_save_info()
             number_Edit->clear();
             date_Edit->clear();
             material_table->clear();
-            ProduceRecords_Edit->hide();
+            Produce_Edit->hide();
             refreshTable();
         }else{
             QMessageBox::warning(this,"上传失败","上传失败");
-            ProduceRecords_Edit->hide();
+            Produce_Edit->hide();
         }
         delete reply;
     });
@@ -589,7 +641,7 @@ void ProduceRecords::cancel()
     number_Edit->clear();
     date_Edit->clear();
     material_table->clear();
-    ProduceRecords_Edit->hide();
+    Produce_Edit->hide();
 }
 
 void ProduceRecords::SaveMaterialInfo()
@@ -613,4 +665,56 @@ void ProduceRecords::SaveMaterialInfo()
     }
 
     materialInfo = jsonArray;
+}
+
+void ProduceRecords::add_material()
+{
+// 创建一个新的 QWidget 用于输入原料名和数量
+    QWidget* addMaterialWidget = new QWidget();
+    QLabel* nameLabel = new QLabel(tr("原料名"));
+    QLabel* quantityLabel = new QLabel(tr("数量"));
+    QLineEdit* nameLineEdit = new QLineEdit();
+    QLineEdit* quantityLineEdit = new QLineEdit();
+    QPushButton* confirmButton = new QPushButton(tr("确认"));
+    QPushButton* cancelButton = new QPushButton(tr("取消"));
+
+    connect(confirmButton, &QPushButton::clicked, [=]() {
+        QString materialName = nameLineEdit->text();
+        QString quantityStr = quantityLineEdit->text();
+        int quantity = quantityStr.toInt();
+
+        // 在 material_table 中插入新的数据
+        int rowCount = material_table->rowCount();
+        material_table->insertRow(rowCount);
+        QTableWidgetItem* nameItem = new QTableWidgetItem(materialName);
+        QTableWidgetItem* quantityItem = new QTableWidgetItem(quantityStr);
+        material_table->setItem(rowCount, 0, nameItem);
+        material_table->setItem(rowCount, 1, quantityItem);
+
+        addMaterialWidget->close();
+    });
+
+    connect(cancelButton, &QPushButton::clicked, [=]() {
+        addMaterialWidget->close();
+    });
+
+    QGridLayout* layout = new QGridLayout();
+    layout->addWidget(nameLabel, 0, 0);
+    layout->addWidget(quantityLabel, 1, 0);
+    layout->addWidget(nameLineEdit, 0, 1);
+    layout->addWidget(quantityLineEdit, 1, 1);
+    layout->addWidget(confirmButton, 2, 0);
+    layout->addWidget(cancelButton, 2, 1);
+    addMaterialWidget->setLayout(layout);
+
+    addMaterialWidget->show();
+
+}
+
+void ProduceRecords::delete_material()
+{
+    QList<QTableWidgetItem*> selectedItems = material_table->selectedItems();
+    foreach (QTableWidgetItem* item, selectedItems) {
+        material_table->removeRow(item->row());
+    }
 }

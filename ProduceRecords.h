@@ -29,18 +29,18 @@ public:
     void initEditWidget();
     QStringList getCountStatus(QByteArray json);
     void refreshTable();
-    void clearProduceRecordsList();
-    void clearProduceRecordsItems();
-    void refreshProduceRecordsItems();
-    void getProduceRecordsList();
+    void clearProduceList();
+    void clearProduceItems();
+    void refreshProduceItems();
+    void getProduceList();
     void getSearchList();
-    void getProduceRecordsJsonInfo(QByteArray data);
+    void getProduceJsonInfo(QByteArray data);
     QByteArray setGetCountJson(QString user, QString token);
-    QByteArray setProduceRecordsListJson(QString user,QString token,int start,int count);
+    QByteArray setProduceListJson(QString user,QString token,int start,int count);
     QByteArray setUploadJson();
     QByteArray setSelectJson();
 private:
-    long m_ProduceRecordsCount;
+    long m_ProduceCount;
     long m_SearchCount;
     int m_start;
     int m_count;
@@ -55,11 +55,11 @@ private:
 
     int cur_status;
 
-    QList<ProduceInfo *> m_ProduceRecordsList;
+    QList<ProduceInfo *> m_ProduceList;
 
     Common m_cm;
     QNetworkAccessManager* m_manager;
-    QWidget *ProduceRecords_Edit;
+    QWidget *Produce_Edit;
     QTableWidget *m_tableWidget;
     QPushButton *Add_Btn;
     QPushButton *Delete_Btn;
@@ -75,6 +75,8 @@ private:
     QTableWidget *material_table;
     QPushButton *update_Save_Btn;
     QPushButton *Edit_Cancel_Btn;
+    QPushButton *add_Material_Btn;
+    QPushButton *delete_Material_Btn;
 
 signals:
 
@@ -86,6 +88,8 @@ private slots:
     void update_save_info();
     void cancel();
     void SaveMaterialInfo();
+    void add_material();
+    void delete_material();
 };
 
 #endif // PRODUCERECORDS_H
