@@ -2,6 +2,9 @@
 #define PRODUCERECORDS_H
 
 #include <QWidget>
+#include "common/common.h"
+#include <QJsonArray>
+#include <QTableWidget>
 
 struct ProduceInfo{
     int produce_id;
@@ -11,6 +14,9 @@ struct ProduceInfo{
     QJsonArray RawMaterial;
 };
 
+class QPushButton;
+class QLineEdit;
+class QLabel;
 
 class ProduceRecords : public QWidget
 {

@@ -2,6 +2,8 @@
 #define PROCURERECORDS_H
 
 #include <QWidget>
+#include "common/common.h"
+#include <QTableWidget>
 
 struct ProcureInfo{
     int procure_id;
@@ -9,6 +11,10 @@ struct ProcureInfo{
     int material_quantity;
     QString procure_time;
 };
+
+class QPushButton;
+class QLineEdit;
+class QLabel;
 
 class ProcureRecords : public QWidget
 {

@@ -49,7 +49,6 @@ void ProduceRecords::initTableWidget()
     // 创建生产记录表格
     m_tableWidget->setColumnCount(5);
     QStringList headerLabels;
-    headerLabels << ;
     m_tableWidget->setHorizontalHeaderLabels(QStringList() <<u8"生产编号" <<u8"产品名称"<<u8"生产数量"<<u8"生产时间"<<u8"消耗原材料");
     //禁止单元格编辑
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -245,7 +244,7 @@ void ProduceRecords::refreshProduceRecordsItems()
             m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->produce_id)));
             m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->product_name));
             m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->produce_id)));
-            m_tableWidget->setItem(row,3,new QTableWidgetItem(QString::number(tmp->product_time)));
+            m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->product_time));
             QJsonDocument jsonDoc(tmp->RawMaterial);
             m_tableWidget->setItem(row,4,new QTableWidgetItem(jsonDoc.toJson(QJsonDocument::Compact)));
         }
@@ -421,14 +420,12 @@ void ProduceRecords::getProduceRecordsJsonInfo(QByteArray data)
 
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
-                ProduceRecordsInfo *info = new ProduceRecordsInfo;
-                info->ProduceRecords_id = tmp.value("ProduceRecords_id").toInt();
-                info->ProduceRecords_name = tmp.value("ProduceRecords_name").toString();
-                info->ProduceRecords_store_unit = tmp.value("ProduceRecords_store_unit").toString();
-                info->ProduceRecords_amount = tmp.value("ProduceRecords_amount").toInt();
-                info->ProduceRecords_sell_unit = tmp.value("ProduceRecords_sell_unit").toString();
-                info->ProduceRecords_price = tmp.value("ProduceRecords_price").toDouble();
-
+                ProduceInfo *info = new ProduceInfo;
+                info->produce_id = tmp.value("produce_id").toInt();
+                info->product_name = tmp.value("product_name").toString();
+                info->product_quantity = tmp.value("product_quantity").toInt();
+                info->product_time = tmp.value("product_time").toString();
+                info->RawMaterial = tmp.value("RawMaterial").toArray();  //--------------------------这里有待商榷
                 //List添加节点
                 m_ProduceRecordsList.append(info);
 
@@ -485,12 +482,11 @@ QByteArray ProduceRecords::setProduceRecordsListJson(QString user, QString token
 QByteArray ProduceRecords::setUploadJson()
 {
     QMap<QString,QVariant> tmp;
-    tmp.insert("ProduceRecords_id",id_Edit->text().toInt());
-    tmp.insert("ProduceRecords_name",name_Edit->text());
-    tmp.insert("ProduceRecords_store_unit",store_Edit->text());
-    tmp.insert("ProduceRecords_amount",amount_Edit->text().toInt());
-    tmp.insert("ProduceRecords_sell_unit",sell_Edit->text());
-    tmp.insert("ProduceRecords_price",price_Edit->text().toInt());
+    tmp.insert("produce_id",id_Edit->text().toInt());
+    tmp.insert("product_name",name_Edit->text());
+    tmp.insert("product_quantity",number_Edit->text().toInt());
+    tmp.insert("product_time",date_Edit->text());
+    //tmp.insert("RawMaterial",sell_Edit->text());//--------------------------这里有待商榷
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
@@ -654,10 +650,10 @@ void ProduceRecords::update()
         int row = index.row();
         id_Edit->setText(m_tableWidget->item(row, 0)->text());
         name_Edit->setText(m_tableWidget->item(row, 1)->text());
-        store_Edit->setText(m_tableWidget->item(row, 2)->text());
-        amount_Edit->setText(m_tableWidget->item(row, 3)->text());
-        sell_Edit->setText(m_tableWidget->item(row, 4)->text());
-        price_Edit->setText(m_tableWidget->item(row, 5)->text());
+        number_Edit->setText(m_tableWidget->item(row, 2)->text());
+        date_Edit->setText(m_tableWidget->item(row, 3)->text());
+        //material_table->setText(m_tableWidget->item(row, 4)->text());//--------------------------这里有待商榷
+
     }
     ProduceRecords_Edit->show();
 }
@@ -700,10 +696,9 @@ void ProduceRecords::update_save_info()
             QMessageBox::information(this,"上传成功","上传成功");
             id_Edit->clear();
             name_Edit->clear();
-            store_Edit->clear();
-            amount_Edit->clear();
-            sell_Edit->clear();
-            price_Edit->clear();
+            number_Edit->clear();
+            date_Edit->clear();
+            material_table->clear();
             ProduceRecords_Edit->hide();
             refreshTable();
         }else{
@@ -718,10 +713,9 @@ void ProduceRecords::cancel()
 {
     id_Edit->clear();
     name_Edit->clear();
-    store_Edit->clear();
-    amount_Edit->clear();
-    sell_Edit->clear();
-    price_Edit->clear();
+    number_Edit->clear();
+    date_Edit->clear();
+    material_table->clear();
     ProduceRecords_Edit->hide();
 }
 
@@ -729,9 +723,9 @@ void ProduceRecords::SaveMaterialInfo()
 {
     QJsonArray jsonArray;
 
-    for (int row = 0; row < tableWidget->rowCount(); ++row) {
-        QTableWidgetItem *nameItem = tableWidget->item(row, 0);
-        QTableWidgetItem *quantityItem = tableWidget->item(row, 1);
+    for (int row = 0; row < material_table->rowCount(); ++row) {
+        QTableWidgetItem *nameItem = material_table->item(row, 0);
+        QTableWidgetItem *quantityItem = material_table->item(row, 1);
 
         if (nameItem && quantityItem) {
             QString name = nameItem->text();

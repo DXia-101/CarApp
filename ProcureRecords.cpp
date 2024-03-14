@@ -80,7 +80,7 @@ void ProcureRecords::initTableWidget()
 
 void ProcureRecords::initEditWidget()
 {
-    ProcureRecords_Edit = new QWidget();
+    Procure_Edit = new QWidget();
 
     QLabel *id_Label = new QLabel(tr("商品ID"));
     QLabel *name_Label = new QLabel(tr("商品名称"));
@@ -114,7 +114,7 @@ void ProcureRecords::initEditWidget()
     EditLayout->addWidget(price_Edit,5,1);
     EditLayout->addWidget(update_Save_Btn,6,0);
     EditLayout->addWidget(Edit_Cancel_Btn,6,1);
-    ProcureRecords_Edit->setLayout(EditLayout);
+    Procure_Edit->setLayout(EditLayout);
 }
 
 // 得到服务器json文件
@@ -147,16 +147,16 @@ QStringList ProcureRecords::getCountStatus(QByteArray json)
 void ProcureRecords::refreshTable()
 {
     // 清空文件列表信息
-    clearProcureRecordsList();
+    clearProcureList();
 
     //将之前的ProcureRecordslist清空
-    clearProcureRecordsItems();
+    clearProcureItems();
 
     //将表格行数清零
     m_tableWidget->setRowCount(0);
 
     //获取商品信息数目
-    m_ProcureRecordsCount = 0;
+    m_ProcureCount = 0;
 
     QNetworkRequest request;
 
@@ -202,65 +202,63 @@ void ProcureRecords::refreshTable()
         }
 
         //转换为long
-        m_ProcureRecordsCount = list.at(1).toLong();
+        m_ProcureCount = list.at(1).toLong();
 
         // 清空文件列表信息
-        clearProcureRecordsList();
+        clearProcureList();
 
-        if(m_ProcureRecordsCount > 0){
+        if(m_ProcureCount > 0){
             // 说明任然有商品
             m_start = 0;    //从0开始
             m_count = 10;   //每次请求10个
 
             // 获取新的商品列表信息
-            getProcureRecordsList();
+            getProcureList();
         }else{//没有商品
-            refreshProcureRecordsItems(); //更新Items
+            refreshProcureItems(); //更新Items
         }
     });
 }
 
 // 清空商品列表
-void ProcureRecords::clearProcureRecordsList()
+void ProcureRecords::clearProcureList()
 {
     m_tableWidget->clear();
 }
 
 // 清空所有商品Item
-void ProcureRecords::clearProcureRecordsItems()
+void ProcureRecords::clearProcureItems()
 {
-    m_ProcureRecordsList.clear();
+    m_ProcureList.clear();
 }
 
 // 商品Item展示
-void ProcureRecords::refreshProcureRecordsItems()
+void ProcureRecords::refreshProcureItems()
 {
     //如果文件列表不为空，显示商品列表
-    if(m_ProcureRecordsList.isEmpty() == false){
-        int n = m_ProcureRecordsList.size();
+    if(m_ProcureList.isEmpty() == false){
+        int n = m_ProcureList.size();
         for(int i = 0;i < n;++i){
-            ProcureRecordsInfo *tmp = m_ProcureRecordsList.at(i);
+            ProcureInfo *tmp = m_ProcureList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
-            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->ProcureRecords_id)));
-            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->ProcureRecords_name));
-            m_tableWidget->setItem(row,2,new QTableWidgetItem(tmp->ProcureRecords_store_unit));
-            m_tableWidget->setItem(row,3,new QTableWidgetItem(QString::number(tmp->ProcureRecords_amount)));
-            m_tableWidget->setItem(row,4,new QTableWidgetItem(tmp->ProcureRecords_sell_unit));
-            m_tableWidget->setItem(row,5,new QTableWidgetItem(QString::number(tmp->ProcureRecords_price)));
+            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->procure_id)));
+            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->material_name));
+            m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->material_quantity)));
+            m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->procure_time));
         }
     }
 }
 
-void ProcureRecords::getProcureRecordsList()
+void ProcureRecords::getProcureList()
 {
     // 遍历数目，结束条件处理
-    if(m_ProcureRecordsCount <= 0){ // 函数递归的结束条件
-        refreshProcureRecordsItems();// 更新表单
+    if(m_ProcureCount <= 0){ // 函数递归的结束条件
+        refreshProcureItems();// 更新表单
         return;
-    }else if(m_count > m_ProcureRecordsCount) // 如果请求文件数量大于商品数目
+    }else if(m_count > m_ProcureCount) // 如果请求文件数量大于商品数目
     {
-        m_count = m_ProcureRecordsCount;
+        m_count = m_ProcureCount;
     }
 
     QNetworkRequest request; // 请求对象
@@ -277,11 +275,11 @@ void ProcureRecords::getProcureRecordsList()
     // 设置请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setProcureRecordsListJson(login->getUser(),login->getToken(),m_start,m_count);
+    QByteArray data = setProcureListJson(login->getUser(),login->getToken(),m_start,m_count);
 
     //改变文件起始点位置
     m_start += m_count;
-    m_ProcureRecordsCount -= m_count;
+    m_ProcureCount -= m_count;
 
     //发送post请求
     QNetworkReply * reply = m_manager->post(request,data);
@@ -314,10 +312,10 @@ void ProcureRecords::getProcureRecordsList()
        // 不是错误码就处理文件列表json信息
        if("015" != m_cm.getCode(array)){
            // 解析商品列表json信息，存放在文件列表中
-           getProcureRecordsJsonInfo(array);
+           getProcureJsonInfo(array);
 
            //继续获取商品信息列表
-           getProcureRecordsList();
+           getProcureList();
        }
     });
 }
@@ -327,7 +325,7 @@ void ProcureRecords::getSearchList()
     //遍历数目，结束条件处理
     if(m_SearchCount <= 0) //结束条件，这个条件很重要，函数递归的结束条件
     {
-        refreshProcureRecordsItems(); //更新item
+        refreshProcureItems(); //更新item
         return; //中断函数
     }
     else if(s_count > m_SearchCount) //如果请求文件数量大于用户的文件数目
@@ -349,7 +347,7 @@ void ProcureRecords::getSearchList()
     //qt默认的请求头
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setProcureRecordsListJson( login->getUser(), login->getToken(), s_start, s_count);
+    QByteArray data = setProcureListJson( login->getUser(), login->getToken(), s_start, s_count);
 
     //改变文件起点位置
     s_start += s_count;
@@ -388,7 +386,7 @@ void ProcureRecords::getSearchList()
         // 不是错误码就处理文件列表json信息
         if("015" != m_cm.getCode(array)){
             // 解析商品列表json信息，存放在文件列表中
-            getProcureRecordsJsonInfo(array);
+            getProcureJsonInfo(array);
 
             //继续获取商品信息列表
             getSearchList();
@@ -397,7 +395,7 @@ void ProcureRecords::getSearchList()
 }
 
 // 解析商品列表json信息，存放在文件列表中
-void ProcureRecords::getProcureRecordsJsonInfo(QByteArray data)
+void ProcureRecords::getProcureJsonInfo(QByteArray data)
 {
     QJsonParseError error;
 
@@ -421,16 +419,14 @@ void ProcureRecords::getProcureRecordsJsonInfo(QByteArray data)
 
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  // 取第i个对象
-                ProcureRecordsInfo *info = new ProcureRecordsInfo;
-                info->ProcureRecords_id = tmp.value("ProcureRecords_id").toInt();
-                info->ProcureRecords_name = tmp.value("ProcureRecords_name").toString();
-                info->ProcureRecords_store_unit = tmp.value("ProcureRecords_store_unit").toString();
-                info->ProcureRecords_amount = tmp.value("ProcureRecords_amount").toInt();
-                info->ProcureRecords_sell_unit = tmp.value("ProcureRecords_sell_unit").toString();
-                info->ProcureRecords_price = tmp.value("ProcureRecords_price").toDouble();
+                ProcureInfo *info = new ProcureInfo;
+                info->procure_id = tmp.value("procure_id").toInt();
+                info->material_name = tmp.value("material_name").toString();
+                info->material_quantity = tmp.value("material_quantity").toInt();
+                info->procure_time = tmp.value("procure_time").toString();
 
                 //List添加节点
-                m_ProcureRecordsList.append(info);
+                m_ProcureList.append(info);
 
             }
         }
@@ -464,7 +460,7 @@ QByteArray ProcureRecords::setGetCountJson(QString user, QString token)
 }
 
 //设置json包
-QByteArray ProcureRecords::setProcureRecordsListJson(QString user, QString token, int start, int count)
+QByteArray ProcureRecords::setProcureListJson(QString user, QString token, int start, int count)
 {
     QMap<QString,QVariant> tmp;
     tmp.insert("user",user);
@@ -504,10 +500,10 @@ QByteArray ProcureRecords::setUploadJson()
 void ProcureRecords::search()
 {
     // 清空文件列表信息
-    clearProcureRecordsList();
+    clearProcureList();
 
     //将之前的ProcureRecordslist清空
-    clearProcureRecordsItems();
+    clearProcureItems();
 
     //将表格行数清零
     m_tableWidget->setRowCount(0);
@@ -570,7 +566,7 @@ void ProcureRecords::search()
             // 获取新的商品列表信息
             getSearchList();
         }else{//没有文件
-            refreshProcureRecordsItems(); //更新表
+            refreshProcureItems(); //更新表
         }
     });
 }
@@ -580,7 +576,7 @@ void ProcureRecords::add()
 {
     cur_status = add_status;
     initEditWidget();
-    ProcureRecords_Edit->show();
+    Procure_Edit->show();
 }
 
 //将选中的表数据的行只作为json包
@@ -659,7 +655,7 @@ void ProcureRecords::update()
         sell_Edit->setText(m_tableWidget->item(row, 4)->text());
         price_Edit->setText(m_tableWidget->item(row, 5)->text());
     }
-    ProcureRecords_Edit->show();
+    Procure_Edit->show();
 }
 
 void ProcureRecords::update_save_info()
@@ -704,11 +700,11 @@ void ProcureRecords::update_save_info()
             amount_Edit->clear();
             sell_Edit->clear();
             price_Edit->clear();
-            ProcureRecords_Edit->hide();
+            Procure_Edit->hide();
             refreshTable();
         }else{
             QMessageBox::warning(this,"上传失败","上传失败");
-            ProcureRecords_Edit->hide();
+            Procure_Edit->hide();
         }
         delete reply;
     });
@@ -722,6 +718,6 @@ void ProcureRecords::cancel()
     amount_Edit->clear();
     sell_Edit->clear();
     price_Edit->clear();
-    ProcureRecords_Edit->hide();
+    Procure_Edit->hide();
 }
 
