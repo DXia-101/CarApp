@@ -42,7 +42,7 @@ void UserOrderInterface::GetUserNames()
         if(reply->error() != QNetworkReply::NoError)
         {
             cout<<reply->errorString();
-            reply->deleteLater();//释放资源
+            reply->deleteLater();
             return;
         }
         QByteArray array = reply->readAll();

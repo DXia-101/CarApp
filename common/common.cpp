@@ -72,7 +72,7 @@ QString Common::getCfgValue(QString title, QString key, QString path)
 
     QJsonParseError error;
 
-    // 将来源数据json转化为JsonDocument
+    
     // 由QByteArray对象构造一个QJsonDocument对象，用于我们的读写操作
     QJsonDocument doc = QJsonDocument::fromJson(json, &error);
     if (error.error == QJsonParseError::NoError) // 没有出错
@@ -377,7 +377,7 @@ QString Common::getCode(QByteArray json)
 {
     QJsonParseError error;
 
-    // 将来源数据json转化为JsonDocument
+    
     // 由QByteArray对象构造一个QJsonDocument对象，用于我们的读写操作
     QJsonDocument doc = QJsonDocument::fromJson(json, &error);
     if (error.error == QJsonParseError::NoError)

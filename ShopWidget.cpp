@@ -97,7 +97,7 @@ void ShopWidget::on_cancelBtn_clicked()
     refreshPurchaseItems();
 }
 
-// 设置json包
+
 // 还需要把用户名添加上去------------
 QByteArray ShopWidget::GetAllPurchaseJson()
 {

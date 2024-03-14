@@ -31,7 +31,7 @@ public:
     // 初始化更改增加页面
     void initEditWidget();
 
-    // 得到服务器json文件
+    
     QStringList getCountStatus(QByteArray json);
 
     // 显示报表信息
@@ -55,7 +55,7 @@ public:
     // 解析报表列表json信息，存放在文件列表中
     void getReportFormJsonInfo(QByteArray data);
 
-    // 设置json包
+    
     QByteArray setGetCountJson(QString user, QString token);
 
     QByteArray setReportFormListJson(QString user,QString token,int start,int count);

@@ -11,7 +11,7 @@ class LoginInfoInstance
 public:
      //保证唯一一个实例
      static LoginInfoInstance *getInstance();
-     //释放堆区空间
+
      static void destroy();
 
      //设置登陆信息
@@ -39,7 +39,7 @@ private:
     public:
         ~Garbo()
         {
-            //释放堆区空间
+            堆区空间
             LoginInfoInstance::destroy();
         }
     };

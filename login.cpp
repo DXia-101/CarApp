@@ -24,38 +24,28 @@ Login::Login(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //初始化
-    //网络请求（http）类
     m_manager = Common::getNetManager();
 
-    // 窗口图标
     this->setWindowIcon(QIcon(":/images/logo.ico"));
 
-    // 去掉边框
     this->setWindowFlags(this->windowFlags() | Qt::FramelessWindowHint);
-    // 设置当前窗口的字体信息
     this->setFont(QFont("新宋体", 12, QFont::Bold, false));
-    //密码
     ui->login_pwd->setEchoMode(QLineEdit::Password);
     ui->reg_pwd->setEchoMode(QLineEdit::Password);
     ui->reg_surepwd->setEchoMode(QLineEdit::Password);
 
-    //当前显示的窗口
     ui->stackedWidget->setCurrentIndex(0);
     ui->login_usr->setFocus();
 
-    // 数据的格式提示
     ui->login_usr->setToolTip("合法字符:[a-z|A-Z|#|@|0-9|-|_|*],字符个数: 3~16");
     ui->reg_usr->setToolTip("合法字符:[a-z|A-Z|#|@|0-9|-|_|*],字符个数: 3~16");
     ui->login_pwd->setToolTip("合法字符:[a-z|A-Z|#|@|0-9|-|_|*],字符个数: 6~18");
     ui->reg_pwd->setToolTip("合法字符:[a-z|A-Z|#|@|0-9|-|_|*],字符个数: 6~18");
     ui->reg_surepwd->setToolTip("合法字符:[a-z|A-Z|#|@|0-9|-|_|*],字符个数: 6~18");
 
-    // 读取配置文件信息，并初始化
     readCfg();
 
 #if 1
-    // 测试数据
     ui->reg_usr->setText("kevin_666");
     ui->reg_nickname->setText("kevin@666");
     ui->reg_pwd->setText("123456");
@@ -160,7 +150,7 @@ QStringList Login::getLoginStatus(QByteArray json)
     QJsonParseError error;
     QStringList list;
 
-    // 将来源数据json转化为JsonDocument
+    
     // 由QByteArray对象构造一个QJsonDocument对象，用于我们的读写操作
     QJsonDocument doc = QJsonDocument::fromJson(json,&error);
     if (error.error == QJsonParseError::NoError)
@@ -173,7 +163,7 @@ QStringList Login::getLoginStatus(QByteArray json)
 
         if( doc.isObject() )
         {
-            //取得最外层这个大对象
+            
             QJsonObject obj = doc.object();
             cout << "服务器返回的数据" << obj;
             //状态码
@@ -324,7 +314,7 @@ void Login::on_login_btn_clicked()
         if (reply->error() != QNetworkReply::NoError)
         {
             cout << reply->errorString();
-            //释放资源
+            
             reply->deleteLater();
             return;
         }
@@ -344,7 +334,7 @@ void Login::on_login_btn_clicked()
             cout << "管理员登陆成功";
 
             // 设置登陆信息，显示文件列表界面需要使用这些信息
-            LoginInfoInstance *p = LoginInfoInstance::getInstance(); //获取单例
+            LoginInfoInstance *p = LoginInfoInstance::getInstance();
             p->setLoginInfo(user, address, port, tmpList.at(1));
             cout << p->getUser().toUtf8().data() << ", " << p->getIp() << ", " << p->getPort() << tmpList.at(1);
             qDebug()<<"user:"<<p->getUser()<<" token:"<<p->getToken();
@@ -360,7 +350,7 @@ void Login::on_login_btn_clicked()
             cout << "用户登陆成功";
 
             // 设置登陆信息，显示文件列表界面需要使用这些信息
-            LoginInfoInstance *p = LoginInfoInstance::getInstance(); //获取单例
+            LoginInfoInstance *p = LoginInfoInstance::getInstance();
             p->setLoginInfo(user, address, port, tmpList.at(1));
             cout << p->getUser().toUtf8().data() << ", " << p->getIp() << ", " << p->getPort() << tmpList.at(1);
             qDebug()<<"user:"<<p->getUser()<<" token:"<<p->getToken();
@@ -374,7 +364,7 @@ void Login::on_login_btn_clicked()
             QMessageBox::warning(this, "登录失败", "用户名或密码不正确！！！");
         }
 
-        reply->deleteLater(); //释放资源
+        reply->deleteLater(); 
     });
 }
 
