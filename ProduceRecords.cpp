@@ -409,17 +409,16 @@ QByteArray ProduceRecords::setProduceListJson(QString user, QString token, int s
 
 QByteArray ProduceRecords::setUploadJson()
 {
-    QMap<QString,QVariant> tmp;
-    tmp.insert("produce_id",id_Edit->text().toInt());
-    tmp.insert("product_name",name_Edit->text());
-    tmp.insert("product_quantity",number_Edit->text().toInt());
-    tmp.insert("product_time",date_Edit->text());
+    QMap<QString, QVariant> tmp;
+    tmp.insert("produce_id", id_Edit->text().toInt());
+    tmp.insert("product_name", name_Edit->text());
+    tmp.insert("product_quantity", number_Edit->text().toInt());
+    tmp.insert("product_time", date_Edit->text());
 
     QJsonArray jsonArray;
-    QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
 
-    foreach (QModelIndex index, selectedRows) {
-        int row = index.row();
+    int rowCount = m_tableWidget->rowCount();
+    for (int row = 0; row < rowCount; ++row) {
         QString materialName = m_tableWidget->item(row, 0)->text();
         int quantity = m_tableWidget->item(row, 1)->text().toInt();
 
@@ -509,12 +508,11 @@ QByteArray ProduceRecords::setSelectJson(){
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        tmp.insert("ProduceRecords_id",m_tableWidget->item(row, 0)->text().toInt());
-        tmp.insert("ProduceRecords_name",m_tableWidget->item(row, 1)->text());
-        tmp.insert("ProduceRecords_store_unit",m_tableWidget->item(row, 2)->text());
-        tmp.insert("ProduceRecords_amount",m_tableWidget->item(row, 3)->text());
-        tmp.insert("ProduceRecords_sell_unit",m_tableWidget->item(row, 4)->text());
-        tmp.insert("ProduceRecords_price",m_tableWidget->item(row, 5)->text());
+        tmp.insert("produce_id",m_tableWidget->item(row, 0)->text().toInt());
+        tmp.insert("product_name",m_tableWidget->item(row, 1)->text());
+        tmp.insert("product_quantity",m_tableWidget->item(row, 2)->text().toInt());
+        tmp.insert("product_time",m_tableWidget->item(row, 3)->text());
+        tmp.insert("RawMaterial",m_tableWidget->item(row, 4)->text());
     }
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){

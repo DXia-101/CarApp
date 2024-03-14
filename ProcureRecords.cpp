@@ -151,7 +151,6 @@ void ProcureRecords::refreshTable()
     QString url = QString("http://%1:%2/Procure?cmd=ProcureCount").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl(url));
 
-    
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());
 
@@ -182,12 +181,8 @@ void ProcureRecords::refreshTable()
             //emit
             return;
         }
-
-        
         m_ProcureCount = list.at(1).toLong();
-
         clearProcureList();
-
         if(m_ProcureCount > 0){
 
             m_start = 0;
