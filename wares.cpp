@@ -155,14 +155,11 @@ void Wares::refreshTable()
 
     QNetworkRequest request;
 
-    
-    
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
     QString url = QString("http://%1:%2/wares?cmd=warescount").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl(url));
 
-    
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
 
@@ -212,7 +209,7 @@ void Wares::refreshTable()
 
 void Wares::clearWaresList()
 {
-    m_tableWidget->clear();
+    m_tableWidget->clearContents();
 }
 
 void Wares::clearWaresItems()
@@ -454,6 +451,11 @@ QByteArray Wares::setUploadJson()
 
 void Wares::search()
 {
+    if(Search_LineEdit->text().isEmpty()){
+        refreshTable();
+        return;
+    }
+
     clearWaresList();
 
     clearWaresItems();
@@ -464,15 +466,11 @@ void Wares::search()
 
     QNetworkRequest request;
 
-    
-    
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
     QString url = QString("http://%1:%2/wares?cmd=waressearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
-
-    
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
     QByteArray data = setGetCountJson(login->getUser(),login->getToken());

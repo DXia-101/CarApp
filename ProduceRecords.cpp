@@ -200,7 +200,7 @@ void ProduceRecords::refreshTable()
 
 void ProduceRecords::clearProduceList()
 {
-    m_tableWidget->clear();
+    m_tableWidget->clearContents();
 }
 
 void ProduceRecords::clearProduceItems()
@@ -446,6 +446,10 @@ QByteArray ProduceRecords::setUploadJson()
 
 void ProduceRecords::search()
 {
+    if(Search_LineEdit->text().isEmpty()){
+        refreshTable();
+        return;
+    }
     clearProduceList();
     clearProduceItems();
 

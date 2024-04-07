@@ -194,7 +194,7 @@ void UserOrderTable::refreshTable()
 
 void UserOrderTable::clearUserOrderList()
 {
-    m_tableWidget->clear();
+    m_tableWidget->clearContents();
 }
 
 void UserOrderTable::clearUserOrderItems()
@@ -470,6 +470,10 @@ QByteArray UserOrderTable::setSelectJson()
 
 void UserOrderTable::search()
 {
+    if(Search_LineEdit->text().isEmpty()){
+        refreshTable();
+        return;
+    }
     // 清空文件列表信息
     clearUserOrderList();
 

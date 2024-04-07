@@ -195,7 +195,7 @@ void ReportForms::refreshTable()
 
 void ReportForms::clearReportFormList()
 {
-    m_tableWidget->clear();
+    m_tableWidget->clearContents();
 }
 
 void ReportForms::clearReportFormItems()
@@ -474,6 +474,10 @@ QByteArray ReportForms::setSelectJson()
 
 void ReportForms::search()
 {
+    if(Search_LineEdit->text().isEmpty()){
+        refreshTable();
+        return;
+    }
     // 清空文件列表信息
     clearReportFormList();
 

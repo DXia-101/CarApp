@@ -179,7 +179,7 @@ void ProcureRecords::refreshTable()
 
 void ProcureRecords::clearProcureList()
 {
-    m_tableWidget->clear();
+    m_tableWidget->clearContents();
 }
 
 void ProcureRecords::clearProcureItems()
@@ -392,6 +392,10 @@ QByteArray ProcureRecords::setUploadJson()
 
 void ProcureRecords::search()
 {
+    if(Search_LineEdit->text().isEmpty()){
+        refreshTable();
+        return;
+    }
     clearProcureList();
     clearProcureItems();
     m_tableWidget->setRowCount(0);

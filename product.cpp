@@ -217,7 +217,7 @@ void Product::refreshTable()
 
 void Product::clearproductList()
 {
-    m_tableWidget->clear();
+    m_tableWidget->clearContents();
 }
 
 void Product::clearproductItems()
@@ -468,10 +468,13 @@ QByteArray Product::setUploadJson()
 
 void Product::search()
 {
+    if(Search_LineEdit->text().isEmpty()){
+        refreshTable();
+        return;
+    }
     clearproductList();
     clearproductItems();
 
-    
     m_tableWidget->setRowCount(0);
 
     m_SearchCount = 0;

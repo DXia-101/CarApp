@@ -42,12 +42,16 @@ void MainWindow::InitTreeWidget()
     infoList.clear();
     infoList<<"项目报表";
     QTreeWidgetItem *twig_6 = new QTreeWidgetItem(treeHead,infoList);
+    infoList.clear();
+    infoList<<"用户管理";
+    QTreeWidgetItem *twig_7 = new QTreeWidgetItem(treeHead,infoList);
     treeHead->addChild(twig_1);
     treeHead->addChild(twig_2);
     treeHead->addChild(twig_3);
     treeHead->addChild(twig_4);
     treeHead->addChild(twig_5);
     treeHead->addChild(twig_6);
+    treeHead->addChild(twig_7);
     ui->treeWidget->expandAll();
 
     //初始化商品表
@@ -64,6 +68,8 @@ void MainWindow::InitTreeWidget()
     ui->StackWidget->addWidget(produce);
     procure = new ProcureRecords();
     ui->StackWidget->addWidget(procure);
+    userManager = new UserManager();
+    ui->StackWidget->addWidget(userManager);
 
 }
 
@@ -88,6 +94,12 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     }
     if(item->text(column)=="生产记录"){
         ui->StackWidget->setCurrentWidget(produce);
+    }
+    if(item->text(column)=="用户管理"){
+        ui->StackWidget->setCurrentWidget(userManager);
+    }
+    if(item->text(column)=="采购记录"){
+        ui->StackWidget->setCurrentWidget(procure);
     }
 }
 

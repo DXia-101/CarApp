@@ -47,7 +47,7 @@ void UserManager::initTableWidget()
     connect(Update_Btn, &QPushButton::clicked, this, &UserManager::update);
 
     m_tableWidget = new QTableWidget(this);
-    m_tableWidget->setColumnCount(4);
+    m_tableWidget->setColumnCount(8);
     QStringList headerLabels;
     m_tableWidget->setHorizontalHeaderLabels(QStringList()<<u8"用户ID" <<u8"用户名称"<<u8"用户昵称"<<u8"用户密码"<<u8"联系方式"<<u8"创建时间"<<u8"电子邮箱"<<u8"用户权限");
 
@@ -193,7 +193,7 @@ void UserManager::refreshTable()
 
 void UserManager::clearUserManagerList()
 {
-    m_tableWidget->clear();
+    m_tableWidget->clearContents();
 }
 
 void UserManager::clearUserManagerItems()
@@ -346,14 +346,14 @@ void UserManager::getUserManagerJsonInfo(QByteArray data)
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();
                 UserManagerInfo *info = new UserManagerInfo;
-                info->UserId = tmp.value("UserId").toInt();
-                info->UserName = tmp.value("UserName").toString();
-                info->UserNickName = tmp.value("UserNickName").toString();
+                info->UserId = tmp.value("id").toInt();
+                info->UserName = tmp.value("name").toString();
+                info->UserNickName = tmp.value("nickname").toString();
                 info->password = tmp.value("password").toString();
-                info->Phone = tmp.value("Phone").toString();
-                info->CreateTime = tmp.value("CreateTime").toString();
-                info->Email = tmp.value("Email").toString();
-                info->Power = tmp.value("Power").toInt();
+                info->Phone = tmp.value("phone").toString();
+                info->CreateTime = tmp.value("createtime").toString();
+                info->Email = tmp.value("email").toString();
+                info->Power = tmp.value("power").toInt();
                 m_UserManagerList.append(info);
 
             }
@@ -398,14 +398,14 @@ QByteArray UserManager::setUserManagerListJson(QString user, QString token, int 
 QByteArray UserManager::setUploadJson()
 {
     QMap<QString,QVariant> tmp;
-    tmp.insert("UserId",UserId_Edit->text().toInt());
-    tmp.insert("UserName",UserName_Edit->text());
-    tmp.insert("UserNickName",UserNickName_Edit->text());
+    tmp.insert("id",UserId_Edit->text().toInt());
+    tmp.insert("name",UserName_Edit->text());
+    tmp.insert("nickname",UserNickName_Edit->text());
     tmp.insert("password",password_Edit->text());
-    tmp.insert("Phone",Phone_Edit->text());
-    tmp.insert("CreateTime",CreateTime_Edit->text());
-    tmp.insert("Power",Email_Edit->text());
-    tmp.insert("UserManager_time",Power_Edit->text().toInt());
+    tmp.insert("phone",Phone_Edit->text());
+    tmp.insert("createtime",CreateTime_Edit->text());
+    tmp.insert("email",Email_Edit->text());
+    tmp.insert("power",Power_Edit->text().toInt());
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
@@ -417,6 +417,10 @@ QByteArray UserManager::setUploadJson()
 
 void UserManager::search()
 {
+    if(Search_LineEdit->text().isEmpty()){
+        refreshTable();
+        return;
+    }
     clearUserManagerList();
     clearUserManagerItems();
     m_tableWidget->setRowCount(0);
@@ -476,14 +480,14 @@ QByteArray UserManager::setSelectJson(){
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        tmp.insert("UserId",m_tableWidget->item(row, 0)->text());
-        tmp.insert("UserName",m_tableWidget->item(row, 1)->text());
-        tmp.insert("UserNickName",m_tableWidget->item(row, 2)->text());
-        tmp.insert("password",m_tableWidget->item(row, 3)->text());
-        tmp.insert("Phone",m_tableWidget->item(row, 4)->text());
-        tmp.insert("CreateTime",m_tableWidget->item(row, 5)->text());
-        tmp.insert("Power",m_tableWidget->item(row, 6)->text());
-        tmp.insert("UserManager_time",m_tableWidget->item(row, 7)->text());
+        tmp.insert("id",UserId_Edit->text().toInt());
+        tmp.insert("name",UserName_Edit->text());
+        tmp.insert("nickname",UserNickName_Edit->text());
+        tmp.insert("password",password_Edit->text());
+        tmp.insert("phone",Phone_Edit->text());
+        tmp.insert("createtime",CreateTime_Edit->text());
+        tmp.insert("email",Email_Edit->text());
+        tmp.insert("power",Power_Edit->text().toInt());
     }
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
