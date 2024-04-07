@@ -183,6 +183,7 @@ void ProduceRecords::refreshTable()
         }
 
         m_ProduceCount = list.at(1).toLong();
+        qDebug()<<"m_ProduceCount : "<<m_ProduceCount;
 
         clearProduceList();
 
@@ -356,7 +357,7 @@ void ProduceRecords::getProduceJsonInfo(QByteArray data)
         if(doc.isObject()){
 
             QJsonObject obj = doc.object();
-            QJsonArray array = obj.value("ProduceRecords").toArray();
+            QJsonArray array = obj.value("Produce").toArray();
             int size = array.size();
 
             for(int i = 0;i < size;++i){

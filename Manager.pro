@@ -20,6 +20,7 @@ SOURCES += \
     ReportForms.cpp \
     ShopWidget.cpp \
     UserInterface.cpp \
+    UserManager.cpp \
     UserOrderInterface.cpp \
     UserOrderTable.cpp \
     common/base64.c \
@@ -47,6 +48,7 @@ HEADERS += \
     ReportForms.h \
     ShopWidget.h \
     UserInterface.h \
+    UserManager.h \
     UserOrderInterface.h \
     UserOrderTable.h \
     common/base64.h \

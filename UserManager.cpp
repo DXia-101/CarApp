@@ -1,4 +1,4 @@
-#include "ProcureRecords.h"
+#include "UserManager.h"
 #include <QTableWidget>
 #include <QPushButton>
 #include <QJsonDocument>
@@ -14,9 +14,10 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QGridLayout>
+#include <QCheckBox>
 #include "common/logininfoinstance.h"
 
-ProcureRecords::ProcureRecords(QWidget *parent)
+UserManager::UserManager(QWidget *parent)
     : QWidget{parent}
 {
 
@@ -25,12 +26,12 @@ ProcureRecords::ProcureRecords(QWidget *parent)
     initTableWidget();
 }
 
-ProcureRecords::~ProcureRecords()
+UserManager::~UserManager()
 {
     if (m_manager) delete m_manager;
 }
 
-void ProcureRecords::initTableWidget()
+void UserManager::initTableWidget()
 {
 
     Search_Btn = new QPushButton(tr("搜索"), this);
@@ -40,15 +41,15 @@ void ProcureRecords::initTableWidget()
     Update_Btn = new QPushButton(tr("更新"), this);
 
 
-    connect(Search_Btn, &QPushButton::clicked, this, &ProcureRecords::search);
-    connect(Add_Btn, &QPushButton::clicked, this, &ProcureRecords::add);
-    connect(Delete_Btn, &QPushButton::clicked, this, &ProcureRecords::remove);
-    connect(Update_Btn, &QPushButton::clicked, this, &ProcureRecords::update);
+    connect(Search_Btn, &QPushButton::clicked, this, &UserManager::search);
+    connect(Add_Btn, &QPushButton::clicked, this, &UserManager::add);
+    connect(Delete_Btn, &QPushButton::clicked, this, &UserManager::remove);
+    connect(Update_Btn, &QPushButton::clicked, this, &UserManager::update);
 
     m_tableWidget = new QTableWidget(this);
     m_tableWidget->setColumnCount(4);
     QStringList headerLabels;
-    m_tableWidget->setHorizontalHeaderLabels(QStringList()<<u8"采购编号" <<u8"原料名称"<<u8"采购数量"<<u8"采购时间");
+    m_tableWidget->setHorizontalHeaderLabels(QStringList()<<u8"用户ID" <<u8"用户名称"<<u8"用户昵称"<<u8"用户密码"<<u8"联系方式"<<u8"创建时间"<<u8"电子邮箱"<<u8"用户权限");
 
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -72,39 +73,56 @@ void ProcureRecords::initTableWidget()
     refreshTable();
 }
 
-void ProcureRecords::initEditWidget()
+void UserManager::initEditWidget()
 {
-    Procure_Edit = new QWidget();
+    UserManager_Edit = new QWidget();
 
-    QLabel *ProcureId_Label = new QLabel(tr("采购ID"));
-    QLabel *MaterialName_Label = new QLabel(tr("原料名称"));
-    QLabel *MaterialQuantity_Label = new QLabel(tr("采购数量"));
-    QLabel *ProcureTime_Label = new QLabel(tr("采购时间"));
-    ProcureId_Edit  = new QLineEdit();
-    MaterialName_Edit = new QLineEdit();
-    MaterialQuantity_Edit = new QLineEdit();
-    ProcureTime_Edit = new QLineEdit();
+    QLabel *UserId_Label = new QLabel(tr("用户ID"));
+    QLabel *UserName_Label = new QLabel(tr("用户名称"));
+    QLabel *UserNickName_Label = new QLabel(tr("用户昵称"));
+    QLabel *Password_Label = new QLabel(tr("用户密码"));
+    QLabel *Phone_Label = new QLabel(tr("联系方式"));
+    QLabel *CreateTime_Label = new QLabel(tr("创建时间"));
+    QLabel *Email_Label = new QLabel(tr("电子邮箱"));
+    QLabel *Power_Label = new QLabel(tr("用户权限"));
+    UserId_Edit = new QLineEdit();
+    UserName_Edit = new QLineEdit();
+    UserNickName_Edit = new QLineEdit();
+    password_Edit = new QLineEdit();
+    Phone_Edit = new QLineEdit();
+    CreateTime_Edit = new QLineEdit();
+    Email_Edit = new QLineEdit();
+    Power_Edit = new QLineEdit();
     update_Save_Btn = new QPushButton(tr("保存"));
     Edit_Cancel_Btn = new QPushButton(tr("取消"));
-    connect(update_Save_Btn, &QPushButton::clicked, this, &ProcureRecords::update_save_info);
-    connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &ProcureRecords::cancel);
+    connect(update_Save_Btn, &QPushButton::clicked, this, &UserManager::update_save_info);
+    connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &UserManager::cancel);
 
     QGridLayout *EditLayout = new QGridLayout();
-    EditLayout->addWidget(ProcureId_Label,0,0);
-    EditLayout->addWidget(MaterialName_Label,1,0);
-    EditLayout->addWidget(MaterialQuantity_Label,2,0);
-    EditLayout->addWidget(ProcureTime_Label,3,0);
-    EditLayout->addWidget(ProcureId_Edit,0,1);
-    EditLayout->addWidget(MaterialName_Edit,1,1);
-    EditLayout->addWidget(MaterialQuantity_Edit,2,1);
-    EditLayout->addWidget(ProcureTime_Edit,3,1);
-    EditLayout->addWidget(update_Save_Btn,4,0);
-    EditLayout->addWidget(Edit_Cancel_Btn,4,1);
-    Procure_Edit->setLayout(EditLayout);
+    EditLayout->addWidget(UserId_Label,0,0);
+    EditLayout->addWidget(UserName_Label,1,0);
+    EditLayout->addWidget(UserNickName_Label,2,0);
+    EditLayout->addWidget(Password_Label,3,0);
+    EditLayout->addWidget(Phone_Label,4,0);
+    EditLayout->addWidget(CreateTime_Label ,5,0);
+    EditLayout->addWidget(Email_Label,6,0);
+    EditLayout->addWidget(Power_Label,7,0);
+    EditLayout->addWidget(UserId_Edit,0,1);
+    UserId_Edit->setFocusPolicy(Qt::NoFocus);
+    EditLayout->addWidget(UserName_Edit,1,1);
+    EditLayout->addWidget(UserNickName_Edit,2,1);
+    EditLayout->addWidget(password_Edit,3,1);
+    EditLayout->addWidget(Phone_Edit,4,1);
+    EditLayout->addWidget(CreateTime_Edit,5,1);
+    EditLayout->addWidget(Email_Edit,6,1);
+    EditLayout->addWidget(Power_Edit,7,1);
+    EditLayout->addWidget(update_Save_Btn,8,0);
+    EditLayout->addWidget(Edit_Cancel_Btn,8,1);
+    UserManager_Edit->setLayout(EditLayout);
 }
 
 
-QStringList ProcureRecords::getCountStatus(QByteArray json)
+QStringList UserManager::getCountStatus(QByteArray json)
 {
     QJsonParseError error;
     QStringList list;
@@ -127,17 +145,17 @@ QStringList ProcureRecords::getCountStatus(QByteArray json)
     return list;
 }
 
-void ProcureRecords::refreshTable()
+void UserManager::refreshTable()
 {
-    clearProcureList();
-    clearProcureItems();
+    clearUserManagerList();
+    clearUserManagerItems();
     m_tableWidget->setRowCount(0);
-    m_ProcureCount = 0;
+    m_UserManagerCount = 0;
 
     QNetworkRequest request;
 
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url = QString("http://%1:%2/Procure?cmd=ProcureCount").arg(login->getIp()).arg(login->getPort());
+    QString url = QString("http://%1:%2/UserManager?cmd=UserManagerCount").arg(login->getIp()).arg(login->getPort());
     request.setUrl(QUrl(url));
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -154,88 +172,88 @@ void ProcureRecords::refreshTable()
             reply->deleteLater();
             return;
         }
-        
         QByteArray array = reply->readAll();
-
         reply->deleteLater();
-
         QStringList list = getCountStatus(array);
-
         if(list.at(0) == "111"){
             QMessageBox::warning(this,"账户异常","请重新登录!");
             return;
         }
-        m_ProcureCount = list.at(1).toLong();
-        clearProcureList();
-        if(m_ProcureCount > 0){
+        m_UserManagerCount = list.at(1).toLong();
+        clearUserManagerList();
+        if(m_UserManagerCount > 0){
             m_start = 0;
             m_count = 10;
-            getProcureList();
+            getUserManagerList();
         }else{
-            refreshProcureItems();
+            refreshUserManagerItems();
         }
     });
 }
 
-void ProcureRecords::clearProcureList()
+void UserManager::clearUserManagerList()
 {
     m_tableWidget->clear();
 }
 
-void ProcureRecords::clearProcureItems()
+void UserManager::clearUserManagerItems()
 {
-    m_ProcureList.clear();
+    m_UserManagerList.clear();
 }
 
-void ProcureRecords::refreshProcureItems()
+void UserManager::refreshUserManagerItems()
 {
-    if(m_ProcureList.isEmpty() == false){
-        int n = m_ProcureList.size();
+    if(m_UserManagerList.isEmpty() == false){
+        int n = m_UserManagerList.size();
         for(int i = 0;i < n;++i){
-            ProcureInfo *tmp = m_ProcureList.at(i);
+            UserManagerInfo *tmp = m_UserManagerList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
-            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->procure_id)));
-            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->material_name));
-            m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->material_quantity)));
-            m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->procure_time));
+            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->UserId)));
+            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->UserName));
+            m_tableWidget->setItem(row,2,new QTableWidgetItem(tmp->UserNickName));
+            m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->password));
+            m_tableWidget->setItem(row,4,new QTableWidgetItem(tmp->Phone));
+            m_tableWidget->setItem(row,5,new QTableWidgetItem(tmp->CreateTime));
+            m_tableWidget->setItem(row,6,new QTableWidgetItem(tmp->Email));
+            m_tableWidget->setItem(row,7,new QTableWidgetItem(QString::number(tmp->Power)));
         }
     }
 }
 
-void ProcureRecords::getProcureList()
+void UserManager::getUserManagerList()
 {
-    if(m_ProcureCount <= 0){
-        refreshProcureItems();
+    if(m_UserManagerCount <= 0){
+        refreshUserManagerItems();
         return;
-    }else if(m_count > m_ProcureCount)
+    }else if(m_count > m_UserManagerCount)
     {
-        m_count = m_ProcureCount;
+        m_count = m_UserManagerCount;
     }
 
     QNetworkRequest request;
 
-    LoginInfoInstance *login = LoginInfoInstance::getInstance();    
+    LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    QString url = QString("http://%1:%2/Procure?cmd=ProcureNormal").arg(login->getIp()).arg(login->getPort());
+    QString url = QString("http://%1:%2/UserManager?cmd=UserManagerNormal").arg(login->getIp()).arg(login->getPort());
 
     request.setUrl(QUrl(url));
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setProcureListJson(login->getUser(),login->getToken(),m_start,m_count);
+    QByteArray data = setUserManagerListJson(login->getUser(),login->getToken(),m_start,m_count);
 
     m_start += m_count;
-    m_ProcureCount -= m_count;
+    m_UserManagerCount -= m_count;
 
     QNetworkReply * reply = m_manager->post(request,data);
     if(reply == NULL){
-        cout<<"getProcureRecordsList reply == NULL";
+        cout<<"getUserManagerList reply == NULL";
         return;
     }
     connect(reply,&QNetworkReply::finished,[=](){
        if(reply->error() != QNetworkReply::NoError){
-           cout<<"getProcureRecordsList error: "<<reply->errorString();
+           cout<<"getUserManagerList error: "<<reply->errorString();
            reply->deleteLater();
            return;
        }
@@ -246,36 +264,35 @@ void ProcureRecords::getProcureList()
            QMessageBox::warning(this,"账户异常","请重新登录！");
            return;
        }
-
        if("015" != m_cm.getCode(array)){
-           getProcureJsonInfo(array);
-           getProcureList();
+           getUserManagerJsonInfo(array);
+           getUserManagerList();
        }
     });
 }
 
-void ProcureRecords::getSearchList()
+void UserManager::getSearchList()
 {
-    if(m_SearchCount <= 0) 
+    if(m_SearchCount <= 0)
     {
-        refreshProcureItems();
+        refreshUserManagerItems();
         return;
     }
-    else if(s_count > m_SearchCount) 
+    else if(s_count > m_SearchCount)
     {
         s_count = m_SearchCount;
     }
 
-    QNetworkRequest request; 
+    QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
     QString url;
 
-    url = QString("http://%1:%2/Procure?cmd=ProcureResult").arg(login->getIp()).arg(login->getPort());
-    request.setUrl(QUrl( url )); 
+    url = QString("http://%1:%2/UserManager?cmd=UserManagerResult").arg(login->getIp()).arg(login->getPort());
+    request.setUrl(QUrl( url ));
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    QByteArray data = setProcureListJson( login->getUser(), login->getToken(), s_start, s_count);
+    QByteArray data = setUserManagerListJson( login->getUser(), login->getToken(), s_start, s_count);
 
     s_start += s_count;
     m_SearchCount -= s_count;
@@ -289,10 +306,10 @@ void ProcureRecords::getSearchList()
 
     connect(reply, &QNetworkReply::finished, [=]()
     {
-        if (reply->error() != QNetworkReply::NoError) 
+        if (reply->error() != QNetworkReply::NoError)
         {
             cout << reply->errorString();
-            reply->deleteLater(); 
+            reply->deleteLater();
             return;
         }
         QByteArray array = reply->readAll();
@@ -303,46 +320,50 @@ void ProcureRecords::getSearchList()
         }
 
         if("015" != m_cm.getCode(array)){
-            getProcureJsonInfo(array);
+            getUserManagerJsonInfo(array);
             getSearchList();
         }
     });
 }
 
-void ProcureRecords::getProcureJsonInfo(QByteArray data)
+void UserManager::getUserManagerJsonInfo(QByteArray data)
 {
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(data,&error);
     if(error.error == QJsonParseError::NoError){
         if(doc.isNull() || doc.isEmpty()){
-            cout<<" m_ProcureRecordsList doc.isNUll() || doc.isEmpty() ";
+            cout<<" m_UserManagerList doc.isNUll() || doc.isEmpty() ";
             return;
         }
         if(doc.isObject()){
-            
-            QJsonObject obj = doc.object();
-            
-            QJsonArray array = obj.value("Procure").toArray();
 
-            int size = array.size(); 
+            QJsonObject obj = doc.object();
+
+            QJsonArray array = obj.value("UserManager").toArray();
+
+            int size = array.size();
 
             for(int i = 0;i < size;++i){
-                QJsonObject tmp = array[i].toObject();  
-                ProcureInfo *info = new ProcureInfo;
-                info->procure_id = tmp.value("procure_id").toInt();
-                info->material_name = tmp.value("material_name").toString();
-                info->material_quantity = tmp.value("material_quantity").toInt();
-                info->procure_time = tmp.value("procure_time").toString();
-                m_ProcureList.append(info);
+                QJsonObject tmp = array[i].toObject();
+                UserManagerInfo *info = new UserManagerInfo;
+                info->UserId = tmp.value("UserId").toInt();
+                info->UserName = tmp.value("UserName").toString();
+                info->UserNickName = tmp.value("UserNickName").toString();
+                info->password = tmp.value("password").toString();
+                info->Phone = tmp.value("Phone").toString();
+                info->CreateTime = tmp.value("CreateTime").toString();
+                info->Email = tmp.value("Email").toString();
+                info->Power = tmp.value("Power").toInt();
+                m_UserManagerList.append(info);
 
             }
         }
     }else{
-        cout<<"getProcureRecordsJsonInfo error = "<<error.errorString();
+        cout<<"getUserManagerJsonInfo error = "<<error.errorString();
     }
 }
 
-QByteArray ProcureRecords::setGetCountJson(QString user, QString token)
+QByteArray UserManager::setGetCountJson(QString user, QString token)
 {
     QMap<QString, QVariant> tmp;
     tmp.insert("user", user);
@@ -357,7 +378,7 @@ QByteArray ProcureRecords::setGetCountJson(QString user, QString token)
 }
 
 
-QByteArray ProcureRecords::setProcureListJson(QString user, QString token, int start, int count)
+QByteArray UserManager::setUserManagerListJson(QString user, QString token, int start, int count)
 {
     QMap<QString,QVariant> tmp;
     tmp.insert("user",user);
@@ -367,20 +388,24 @@ QByteArray ProcureRecords::setProcureListJson(QString user, QString token, int s
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if( jsonDocument.isNull()){
-        cout<<"setProcureRecordsListJson jsonDocument.isNull()";
+        cout<<"setUserManagerListJson jsonDocument.isNull()";
         return "";
     }
 
     return jsonDocument.toJson();
 }
 
-QByteArray ProcureRecords::setUploadJson()
+QByteArray UserManager::setUploadJson()
 {
     QMap<QString,QVariant> tmp;
-    tmp.insert("procure_id",ProcureId_Edit->text().toInt());
-    tmp.insert("material_name",MaterialName_Edit->text());
-    tmp.insert("material_quantity",MaterialQuantity_Edit->text());
-    tmp.insert("procure_time",ProcureTime_Edit->text().toInt());
+    tmp.insert("UserId",UserId_Edit->text().toInt());
+    tmp.insert("UserName",UserName_Edit->text());
+    tmp.insert("UserNickName",UserNickName_Edit->text());
+    tmp.insert("password",password_Edit->text());
+    tmp.insert("Phone",Phone_Edit->text());
+    tmp.insert("CreateTime",CreateTime_Edit->text());
+    tmp.insert("Power",Email_Edit->text());
+    tmp.insert("UserManager_time",Power_Edit->text().toInt());
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
@@ -390,17 +415,17 @@ QByteArray ProcureRecords::setUploadJson()
     return jsonDocument.toJson();
 }
 
-void ProcureRecords::search()
+void UserManager::search()
 {
-    clearProcureList();
-    clearProcureItems();
+    clearUserManagerList();
+    clearUserManagerItems();
     m_tableWidget->setRowCount(0);
     m_SearchCount = 0;
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    QString url = QString("http://%1:%2/Procure?cmd=ProcureSearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/UserManager?cmd=UserManagerSearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -419,7 +444,7 @@ void ProcureRecords::search()
             reply->deleteLater();
             return;
         }
-        
+
         QByteArray array = reply->readAll();
         reply->deleteLater();
         QStringList list = getCountStatus(array);
@@ -434,27 +459,31 @@ void ProcureRecords::search()
             s_count = 10;
             getSearchList();
         }else{
-            refreshProcureItems(); //更新表
+            refreshUserManagerItems(); //更新表
         }
     });
 }
 
-void ProcureRecords::add()
+void UserManager::add()
 {
     cur_status = add_status;
     initEditWidget();
-    Procure_Edit->show();
+    UserManager_Edit->show();
 }
 
-QByteArray ProcureRecords::setSelectJson(){
+QByteArray UserManager::setSelectJson(){
     QMap<QString,QVariant> tmp;
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        tmp.insert("procure_id",m_tableWidget->item(row, 0)->text().toInt());
-        tmp.insert("material_name",m_tableWidget->item(row, 1)->text());
-        tmp.insert("material_quantity",m_tableWidget->item(row, 2)->text());
-        tmp.insert("procure_time",m_tableWidget->item(row, 3)->text());
+        tmp.insert("UserId",m_tableWidget->item(row, 0)->text());
+        tmp.insert("UserName",m_tableWidget->item(row, 1)->text());
+        tmp.insert("UserNickName",m_tableWidget->item(row, 2)->text());
+        tmp.insert("password",m_tableWidget->item(row, 3)->text());
+        tmp.insert("Phone",m_tableWidget->item(row, 4)->text());
+        tmp.insert("CreateTime",m_tableWidget->item(row, 5)->text());
+        tmp.insert("Power",m_tableWidget->item(row, 6)->text());
+        tmp.insert("UserManager_time",m_tableWidget->item(row, 7)->text());
     }
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
@@ -464,13 +493,13 @@ QByteArray ProcureRecords::setSelectJson(){
     return jsonDocument.toJson();
 }
 
-void ProcureRecords::remove()
+void UserManager::remove()
 {
     QByteArray array = setSelectJson();
 
     QNetworkRequest request;
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
-    QString url= QString("http://%1:%2/Procure?cmd=ProcureDelete").arg(login->getIp()).arg(login->getPort());
+    QString url= QString("http://%1:%2/UserManager?cmd=UserManagerDelete").arg(login->getIp()).arg(login->getPort());
 
     request.setUrl(QUrl(url));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
@@ -491,22 +520,26 @@ void ProcureRecords::remove()
     });
 }
 
-void ProcureRecords::update()
+void UserManager::update()
 {
     cur_status = update_status;
     initEditWidget();
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        ProcureId_Edit->setText(m_tableWidget->item(row, 0)->text());
-        MaterialName_Edit->setText(m_tableWidget->item(row, 1)->text());
-        MaterialQuantity_Edit->setText(m_tableWidget->item(row, 2)->text());
-        ProcureTime_Edit->setText(m_tableWidget->item(row, 3)->text());
+        UserId_Edit->setText(m_tableWidget->item(row, 0)->text());
+        UserName_Edit->setText(m_tableWidget->item(row, 1)->text());
+        UserNickName_Edit->setText(m_tableWidget->item(row, 2)->text());
+        password_Edit->setText(m_tableWidget->item(row, 3)->text());
+        Phone_Edit->setText(m_tableWidget->item(row, 4)->text());
+        CreateTime_Edit->setText(m_tableWidget->item(row, 5)->text());
+        Email_Edit->setText(m_tableWidget->item(row, 6)->text());
+        Power_Edit->setText(m_tableWidget->item(row, 7)->text());
     }
-    Procure_Edit->show();
+    UserManager_Edit->show();
 }
 
-void ProcureRecords::update_save_info()
+void UserManager::update_save_info()
 {
     QByteArray array = setUploadJson();
 
@@ -514,9 +547,9 @@ void ProcureRecords::update_save_info()
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
     QString url;
     if(update_status == cur_status){
-        url = QString("http://%1:%2/Procure?cmd=ProcureUpdate").arg(login->getIp()).arg(login->getPort());
+        url = QString("http://%1:%2/UserManager?cmd=UserManagerUpdate").arg(login->getIp()).arg(login->getPort());
     }else if(add_status == cur_status){
-        url = QString("http://%1:%2/Procure?cmd=ProcureAdd").arg(login->getIp()).arg(login->getPort());
+        url = QString("http://%1:%2/UserManager?cmd=UserManagerAdd").arg(login->getIp()).arg(login->getPort());
     }
 
     request.setUrl(QUrl(url));
@@ -530,26 +563,34 @@ void ProcureRecords::update_save_info()
         if("020" == m_cm.getCode(jsonData))
         {
             QMessageBox::information(this,"上传成功","上传成功");
-            ProcureId_Edit->clear();
-            MaterialName_Edit->clear();
-            MaterialQuantity_Edit->clear();
-            ProcureTime_Edit->clear();
-            Procure_Edit->hide();
+            UserId_Edit->clear();
+            UserName_Edit->clear();
+            UserNickName_Edit->clear();
+            password_Edit->clear();
+            Phone_Edit->clear();
+            CreateTime_Edit->clear();
+            Email_Edit->clear();
+            Power_Edit->clear();
+            UserManager_Edit->hide();
             refreshTable();
         }else{
             QMessageBox::warning(this,"上传失败","上传失败");
-            Procure_Edit->hide();
+            UserManager_Edit->hide();
         }
         delete reply;
     });
 }
 
-void ProcureRecords::cancel()
+void UserManager::cancel()
 {
-    ProcureId_Edit->clear();
-    MaterialName_Edit->clear();
-    MaterialQuantity_Edit->clear();
-    ProcureTime_Edit->clear();
-    Procure_Edit->hide();
+    UserId_Edit->clear();
+    UserName_Edit->clear();
+    UserNickName_Edit->clear();
+    password_Edit->clear();
+    Phone_Edit->clear();
+    CreateTime_Edit->clear();
+    Email_Edit->clear();
+    Power_Edit->clear();
+    UserManager_Edit->hide();
 }
 

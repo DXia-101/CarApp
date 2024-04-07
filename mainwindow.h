@@ -8,6 +8,7 @@
 #include "UserOrderInterface.h"
 #include "ReportForms.h"
 #include "ProduceRecords.h"
+#include "ProcureRecords.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,5 +41,6 @@ private:
     UserOrderInterface* userorder;
     ReportForms* reportforms;
     ProduceRecords* produce;
+    ProcureRecords* procure;
 };
 #endif // MAINWINDOW_H

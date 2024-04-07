@@ -62,6 +62,8 @@ void MainWindow::InitTreeWidget()
     ui->StackWidget->addWidget(reportforms);
     produce = new ProduceRecords();
     ui->StackWidget->addWidget(produce);
+    procure = new ProcureRecords();
+    ui->StackWidget->addWidget(procure);
 
 }
 
