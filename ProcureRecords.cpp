@@ -379,8 +379,8 @@ QByteArray ProcureRecords::setUploadJson()
     QMap<QString,QVariant> tmp;
     tmp.insert("procure_id",ProcureId_Edit->text().toInt());
     tmp.insert("material_name",MaterialName_Edit->text());
-    tmp.insert("material_quantity",MaterialQuantity_Edit->text());
-    tmp.insert("procure_time",ProcureTime_Edit->text().toInt());
+    tmp.insert("material_quantity",MaterialQuantity_Edit->text().toInt());
+    tmp.insert("procure_time",ProcureTime_Edit->text());
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){

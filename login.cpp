@@ -45,7 +45,7 @@ Login::Login(QWidget *parent) :
 
     readCfg();
 
-#if 1
+#if 0
     ui->reg_usr->setText("kevin_666");
     ui->reg_nickname->setText("kevin@666");
     ui->reg_pwd->setText("123456");
@@ -381,52 +381,52 @@ void Login::on_register_btn_clicked()
 
 
     // 数据校验
-    QRegularExpression regexp(USER_REG);
-    if(!regexp.match(userName).hasMatch())
-    {
-        QMessageBox::warning(this, "警告", "用户名格式不正确");
-        ui->reg_usr->clear();
-        ui->reg_usr->setFocus();
-        return;
-    }
-    if(!regexp.match(nickName).hasMatch())
-    {
-        QMessageBox::warning(this, "警告", "昵称格式不正确");
-        ui->reg_nickname->clear();
-        ui->reg_nickname->setFocus();
-        return;
-    }
-    regexp.setPattern(PASSWD_REG);
-    if(!regexp.match(firstPwd).hasMatch())
-    {
-        QMessageBox::warning(this, "警告", "密码格式不正确");
-        ui->reg_pwd->clear();
-        ui->reg_pwd->setFocus();
-        return;
-    }
-    if(surePwd != firstPwd)
-    {
-        QMessageBox::warning(this, "警告", "两次输入的密码不匹配, 请重新输入");
-        ui->reg_surepwd->clear();
-        ui->reg_surepwd->setFocus();
-        return;
-    }
-    regexp.setPattern(PHONE_REG);
-    if(!regexp.match(phone).hasMatch())
-    {
-        QMessageBox::warning(this, "警告", "手机号码格式不正确");
-        ui->reg_phone->clear();
-        ui->reg_phone->setFocus();
-        return;
-    }
-    regexp.setPattern(EMAIL_REG);
-    if(!regexp.match(email).hasMatch())
-    {
-        QMessageBox::warning(this, "警告", "邮箱码格式不正确");
-        ui->reg_mail->clear();
-        ui->reg_mail->setFocus();
-        return;
-    }
+//    QRegularExpression regexp(USER_REG);
+//    if(!regexp.match(userName).hasMatch())
+//    {
+//        QMessageBox::warning(this, "警告", "用户名格式不正确");
+//        ui->reg_usr->clear();
+//        ui->reg_usr->setFocus();
+//        return;
+//    }
+//    if(!regexp.match(nickName).hasMatch())
+//    {
+//        QMessageBox::warning(this, "警告", "昵称格式不正确");
+//        ui->reg_nickname->clear();
+//        ui->reg_nickname->setFocus();
+//        return;
+//    }
+//    regexp.setPattern(PASSWD_REG);
+//    if(!regexp.match(firstPwd).hasMatch())
+//    {
+//        QMessageBox::warning(this, "警告", "密码格式不正确");
+//        ui->reg_pwd->clear();
+//        ui->reg_pwd->setFocus();
+//        return;
+//    }
+//    if(surePwd != firstPwd)
+//    {
+//        QMessageBox::warning(this, "警告", "两次输入的密码不匹配, 请重新输入");
+//        ui->reg_surepwd->clear();
+//        ui->reg_surepwd->setFocus();
+//        return;
+//    }
+//    regexp.setPattern(PHONE_REG);
+//    if(!regexp.match(phone).hasMatch())
+//    {
+//        QMessageBox::warning(this, "警告", "手机号码格式不正确");
+//        ui->reg_phone->clear();
+//        ui->reg_phone->setFocus();
+//        return;
+//    }
+//    regexp.setPattern(EMAIL_REG);
+//    if(!regexp.match(email).hasMatch())
+//    {
+//        QMessageBox::warning(this, "警告", "邮箱码格式不正确");
+//        ui->reg_mail->clear();
+//        ui->reg_mail->setFocus();
+//        return;
+//    }
 
 
     // 将注册信息打包为json格式

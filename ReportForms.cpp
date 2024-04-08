@@ -496,8 +496,6 @@ void ReportForms::search()
     
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
-    // 127.0.0.1:80/wares?cmd=search
-    // 获取报表信息数目
     QString url = QString("http://%1:%2/ReportForm?cmd=ReportFormSearch=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
 

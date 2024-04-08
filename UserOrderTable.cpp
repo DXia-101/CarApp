@@ -74,9 +74,12 @@ void UserOrderTable::initEditWidget()
 {
     UserOrder_Edit = new QWidget();
 
+    QLabel *UserOrder_OrderID_Label = new QLabel(tr("订单ID"));
     QLabel *UserOrder_ProductName_Label = new QLabel(tr("商品名称"));
     QLabel *UserOrder_Count_Label = new QLabel(tr("订购数量"));
 
+    UserOrder_OrderID_Edit = new QLineEdit();
+    UserOrder_OrderID_Edit->setFocusPolicy(Qt::NoFocus);
     UserOrder_ProductName_Edit  = new QLineEdit();
     UserOrder_Count_Edit = new QLineEdit();
     update_Save_Btn = new QPushButton(tr("保存"));
@@ -85,10 +88,12 @@ void UserOrderTable::initEditWidget()
     connect(Edit_Cancel_Btn, &QPushButton::clicked, this, &UserOrderTable::cancel);
 
     QGridLayout *EditLayout = new QGridLayout();
-    EditLayout->addWidget(UserOrder_ProductName_Label,0,0);
-    EditLayout->addWidget(UserOrder_Count_Label,1,0);
-    EditLayout->addWidget(UserOrder_ProductName_Edit,0,1);
-    EditLayout->addWidget(UserOrder_Count_Edit,1,1);
+    EditLayout->addWidget(UserOrder_OrderID_Label,0,0);
+    EditLayout->addWidget(UserOrder_ProductName_Label,1,0);
+    EditLayout->addWidget(UserOrder_Count_Label,2,0);
+    EditLayout->addWidget(UserOrder_OrderID_Edit,0,1);
+    EditLayout->addWidget(UserOrder_ProductName_Edit,1,1);
+    EditLayout->addWidget(UserOrder_Count_Edit,2,1);
 
     EditLayout->addWidget(update_Save_Btn,6,0);
     EditLayout->addWidget(Edit_Cancel_Btn,6,1);
@@ -211,10 +216,10 @@ void UserOrderTable::refreshUserOrderItems()
             UserOrderTableInfo *tmp = m_UserOrderList.at(i);
             int row = m_tableWidget->rowCount();
             m_tableWidget->insertRow(row);
-            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->UserOrderTable_OrderID)));
-            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->UserOrderTable_Productname));
-            m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->UserOrderTable_count)));
-            m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->UserOrderTable_time));
+            m_tableWidget->setItem(row,0,new QTableWidgetItem(QString::number(tmp->OrderID)));
+            m_tableWidget->setItem(row,1,new QTableWidgetItem(tmp->ProductName));
+            m_tableWidget->setItem(row,2,new QTableWidgetItem(QString::number(tmp->count)));
+            m_tableWidget->setItem(row,3,new QTableWidgetItem(tmp->timestamp));
         }
     }
 }
@@ -248,14 +253,12 @@ void UserOrderTable::getUserOrderList()
     m_start += m_count;
     m_UserOrderCount -= m_count;
 
-    
     QNetworkReply * reply = m_manager->post(request,data);
     if(reply == NULL){
         cout<<"getUserOrderList reply == NULL";
         return;
     }
 
-    
     connect(reply,&QNetworkReply::finished,[=](){
        if(reply->error() != QNetworkReply::NoError){
            cout<<"getUserOrderList error: "<<reply->errorString();
@@ -275,7 +278,6 @@ void UserOrderTable::getUserOrderList()
            return;
        }
 
-       
        if("015" != m_cm.getCode(array)){
            getUserOrderJsonInfo(array);
 
@@ -306,16 +308,13 @@ void UserOrderTable::getSearchList()
     url = QString("http://%1:%2/UserOrder?cmd=userOrderresult=%3").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8()));
     request.setUrl(QUrl( url ));
 
-    
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
     QByteArray data = setUserOrderListJson( login->getUser(), login->getToken(), s_start, s_count);
 
-    
     s_start += s_count;
     m_SearchCount -= s_count;
 
-    
     QNetworkReply * reply = m_manager->post( request, data );
     if(reply == NULL)
     {
@@ -323,7 +322,6 @@ void UserOrderTable::getSearchList()
         return;
     }
 
-    
     connect(reply, &QNetworkReply::finished, [=]()
     {
         if (reply->error() != QNetworkReply::NoError) 
@@ -359,8 +357,6 @@ void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
 {
     QJsonParseError error;
 
-    
-    
     QJsonDocument doc = QJsonDocument::fromJson(data,&error);
     if(error.error == QJsonParseError::NoError){
         if(doc.isNull() || doc.isEmpty()){
@@ -368,11 +364,7 @@ void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
             return;
         }
         if(doc.isObject()){
-            
             QJsonObject obj = doc.object();
-
-            //获取UserOrder对应的数组
-            
             QJsonArray array = obj.value("UserOrder").toArray();
 
             int size = array.size(); 
@@ -380,15 +372,13 @@ void UserOrderTable::getUserOrderJsonInfo(QByteArray data)
             for(int i = 0;i < size;++i){
                 QJsonObject tmp = array[i].toObject();  
                 UserOrderTableInfo *info = new UserOrderTableInfo;
-                info->UserOrderTable_OrderID = tmp.value("UserOrderTable_OrderID").toInt();
-                info->UserOrderTable_Productname = tmp.value("UserOrderTable_Productname").toString();
-                info->UserOrderTable_count = tmp.value("UserOrderTable_count").toInt();
-                info->UserOrderTable_time = tmp.value("UserOrderTable_time").toString();
-
+                info->OrderID = tmp.value("OrderID").toInt();
+                info->ProductName = tmp.value("ProductName").toString();
+                info->count = tmp.value("count").toInt();
+                info->timestamp = tmp.value("timestamp").toString();
 
                 //List添加节点
                 m_UserOrderList.append(info);
-
             }
         }
     }else{
@@ -402,12 +392,6 @@ QByteArray UserOrderTable::setGetCountJson(QString user, QString token)
     tmp.insert("user", user);
     tmp.insert("token", token);
 
-    /*json数据如下
-    {
-        user:xxxx
-        token: xxxx
-    }
-    */
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if ( jsonDocument.isNull() )
     {
@@ -415,7 +399,6 @@ QByteArray UserOrderTable::setGetCountJson(QString user, QString token)
         return "";
     }
 
-    
     return jsonDocument.toJson();
 }
 
@@ -438,10 +421,11 @@ QByteArray UserOrderTable::setUserOrderListJson(QString user, QString token, int
 
 QByteArray UserOrderTable::setUploadJson()
 {
+    QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     QMap<QString,QVariant> tmp;
-    tmp.insert("UserOrderTable_Productname",UserOrder_ProductName_Edit->text());
-    tmp.insert("UserOrderTable_count",UserOrder_Count_Edit->text().toInt());
-
+    tmp.insert("OrderID",UserOrder_OrderID_Edit->text());
+    tmp.insert("ProductName",UserOrder_ProductName_Edit->text());
+    tmp.insert("count",UserOrder_Count_Edit->text().toInt());
 
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
@@ -457,8 +441,9 @@ QByteArray UserOrderTable::setSelectJson()
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        tmp.insert("UserOrderTable_Productname",m_tableWidget->item(row, 0)->text());
-        tmp.insert("UserOrderTable_count",m_tableWidget->item(row, 1)->text().toInt());
+        tmp.insert("OrderID",m_tableWidget->item(row, 0)->text());
+        tmp.insert("ProductName",m_tableWidget->item(row, 1)->text());
+        tmp.insert("count",m_tableWidget->item(row, 2)->text().toInt());
     }
     QJsonDocument jsonDocument = QJsonDocument::fromVariant(tmp);
     if(jsonDocument.isNull()){
@@ -480,21 +465,19 @@ void UserOrderTable::search()
     //将之前的UserOrderlist清空
     clearUserOrderItems();
 
-    
     m_tableWidget->setRowCount(0);
 
     //获取商品信息数目
     m_SearchCount = 0;
     QNetworkRequest request;
-    
-    
+
     LoginInfoInstance *login = LoginInfoInstance::getInstance();
 
     // 127.0.0.1:80/UserOrder?cmd=search
     // 获取商品信息数目
-    QString url = QString("http://%1:%2/UserOrder?cmd=userOrdersearch=%3&%4").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8())),arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
+    QString url = QString("http://%1:%2/UserOrder?cmd=userOrdersearch=%3=%4").arg(login->getIp()).arg(login->getPort()).arg(QString::fromUtf8(UserName.toUtf8())).arg(QString::fromUtf8(Search_LineEdit->text().toUtf8().toBase64()));
     request.setUrl(QUrl(url));
-
+    qDebug()<<"UserOrderSearch : "<<url;
     
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
@@ -519,17 +502,14 @@ void UserOrderTable::search()
 
         reply->deleteLater();
 
-        
         QStringList list = getCountStatus(array);
 
-        
         if(list.at(0) == "111"){
             QMessageBox::warning(this,"账户异常","请重新登录!");
             //emit
             return;
         }
 
-        
         m_SearchCount = list.at(1).toLong();
 
         if(m_SearchCount > 0){
@@ -577,8 +557,9 @@ void UserOrderTable::update()
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        UserOrder_ProductName_Edit->setText(m_tableWidget->item(row, 0)->text());
-        UserOrder_Count_Edit->setText(m_tableWidget->item(row, 1)->text());
+        UserOrder_OrderID_Edit->setText(m_tableWidget->item(row, 0)->text());
+        UserOrder_ProductName_Edit->setText(m_tableWidget->item(row, 1)->text());
+        UserOrder_Count_Edit->setText(m_tableWidget->item(row, 2)->text());
     }
     UserOrder_Edit->show();
 }
@@ -621,6 +602,5 @@ void UserOrderTable::cancel()
 {
     UserOrder_ProductName_Edit->clear();
     UserOrder_Count_Edit->clear();
-
     UserOrder_Edit->hide();
 }

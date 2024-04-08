@@ -6,10 +6,10 @@
 #include <QTableWidget>
 
 struct UserOrderTableInfo{
-    quint16 UserOrderTable_OrderID;
-    QString UserOrderTable_Productname;
-    quint16 UserOrderTable_count;
-    QString UserOrderTable_time;
+    quint16 OrderID;
+    QString ProductName;
+    quint16 count;
+    QString timestamp;
 };
 
 class QPushButton;
@@ -68,6 +68,7 @@ private:
     QPushButton *Search_Btn;
     QLineEdit *Search_LineEdit;
 
+    QLineEdit *UserOrder_OrderID_Edit;
     QLineEdit *UserOrder_ProductName_Edit;
     QLineEdit *UserOrder_Count_Edit;
 
