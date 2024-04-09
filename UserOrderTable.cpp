@@ -423,7 +423,7 @@ QByteArray UserOrderTable::setUploadJson()
 {
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     QMap<QString,QVariant> tmp;
-    tmp.insert("OrderID",UserOrder_OrderID_Edit->text());
+    tmp.insert("OrderID",UserOrder_OrderID_Edit->text().toInt());
     tmp.insert("ProductName",UserOrder_ProductName_Edit->text());
     tmp.insert("count",UserOrder_Count_Edit->text().toInt());
 
@@ -441,7 +441,7 @@ QByteArray UserOrderTable::setSelectJson()
     QModelIndexList selectedRows = m_tableWidget->selectionModel()->selectedRows();
     foreach (QModelIndex index, selectedRows) {
         int row = index.row();
-        tmp.insert("OrderID",m_tableWidget->item(row, 0)->text());
+        tmp.insert("OrderID",m_tableWidget->item(row, 0)->text().toInt());
         tmp.insert("ProductName",m_tableWidget->item(row, 1)->text());
         tmp.insert("count",m_tableWidget->item(row, 2)->text().toInt());
     }
