@@ -37,8 +37,6 @@ public:
     QByteArray setProcureListJson(QString user,QString token,int start,int count);
     QByteArray setUploadJson();
     QByteArray setSelectJson();
-
-
 private:
     long m_ProcureCount;
     long m_SearchCount;
